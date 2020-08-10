@@ -17,7 +17,6 @@ module.exports = {
     ],
     'type-case': [0],
     'subject-case': [0],
-    'subject-max-length': [2, 'always', 255],
-    lang: [0]
+    'subject-max-length': [2, 'always', 255]
   }
-}
+};
