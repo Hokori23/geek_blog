@@ -35,9 +35,9 @@ export default {
   /**
    * 全局middleware
    */
-  router: {
-    middleware: ['test']
-  },
+//   router: {
+//     middleware: ['test']
+//   },
   /*
    ** Global CSS
    */
@@ -80,7 +80,7 @@ export default {
   axios: {},
   dev: process.env.NODE_ENV !== 'production',
   env: {
-    baseUrl: process.env.BASE_URL || ''
+    baseUrl: process.env.BASE_URL || 'http://localhost:3000'
   },
   /*
    ** vuetify module configuration

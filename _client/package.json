@@ -1,7 +1,9 @@
 {
-  "name": "geek_blog",
+  "name": "geek_blog_client",
   "version": "1.0.0",
+  "description": "Geek blog 前端SSR，由nuxt.js框架支持",
   "private": true,
+  "author": "Hokori",
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
