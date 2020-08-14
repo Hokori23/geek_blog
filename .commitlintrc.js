@@ -12,7 +12,8 @@ module.exports = {
         'Refactor', //重构（即不是新增功能，也不是修改bug的代码变动）
         'Test', //增加测试
         'Chore', //构建过程或辅助工具的变动
-        'Revert' //回滚
+        'Revert', //回滚
+        'Merge' //合并分支
       ]
     ],
     'type-case': [0],
