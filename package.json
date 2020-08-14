@@ -1,33 +1,29 @@
 {
   "name": "geek_blog",
   "version": "1.0.0",
+  "description": "Geek blog ，大体技术栈：nuxt.js + express",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
-    "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate",
-    "lint:js": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "lint": "npm run lint:js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "cd _server",
+    "client": "cd _client && npm run dev",
+    "client:install": "cd _client && npm install"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hokori23/geek_blog.git"
+  },
+  "keywords": [],
+  "author": "Hokori",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hokori23/geek_blog/issues"
+  },
+  "homepage": "https://github.com/Hokori23/geek_blog#readme",
   "dependencies": {
-    "@nuxtjs/axios": "^5.12.0",
-    "@nuxtjs/pwa": "^3.0.0-beta.20",
-    "nuxt": "^2.14.0"
-  },
-  "devDependencies": {
     "@commitlint/cli": "^9.1.1",
     "@commitlint/config-conventional": "^9.1.1",
-    "@nuxtjs/eslint-config": "^3.1.0",
-    "@nuxtjs/eslint-module": "^2.0.0",
-    "@nuxtjs/vuetify": "^1.11.2",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.5.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-nuxt": "^1.0.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "husky": "^4.2.5",
-    "prettier": "^2.0.5"
+    "husky": "^4.2.5"
   },
   "husky": {
     "hooks": {

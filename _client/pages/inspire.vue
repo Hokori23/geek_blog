@@ -14,6 +14,19 @@
           </small>
         </footer>
       </blockquote>
+      <p>
+        Rendered On {{ renderedOn }} side
+      </p>
     </v-flex>
   </v-layout>
 </template>
+
+<script>
+export default {
+  asyncData() {
+    return {
+      renderedOn: process.client ? 'client' : 'server'
+    };
+  }
+}
+</script>
