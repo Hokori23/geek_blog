@@ -1,9 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostTags = exports.Post = exports.User = void 0;
-var User_1 = require("./User");
-Object.defineProperty(exports, "User", { enumerable: true, get: function () { return User_1.User; } });
-var Post_1 = require("./Post");
-Object.defineProperty(exports, "Post", { enumerable: true, get: function () { return Post_1.Post; } });
-var PostTags_1 = require("./PostTags");
-Object.defineProperty(exports, "PostTags", { enumerable: true, get: function () { return PostTags_1.PostTags; } });
+var User_1 = __importDefault(require("./User"));
+exports.User = User_1.default;
+var Post_1 = __importDefault(require("./Post"));
+exports.Post = Post_1.default;
+var PostTags_1 = __importDefault(require("./PostTags"));
+exports.PostTags = PostTags_1.default;

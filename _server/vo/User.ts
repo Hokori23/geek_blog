@@ -1,4 +1,4 @@
-export interface User {
+interface User {
   id?: number;
   account?: string;
   username?: string;
@@ -11,7 +11,7 @@ export interface User {
   last_activated_at?: string;
 }
 
-export class User {
+class User {
   id?: number;
   account?: string;
   username?: string;
@@ -73,4 +73,4 @@ export class User {
   }
 }
 
-module.exports = User;
+export default User;

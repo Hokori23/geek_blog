@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Post = void 0;
 var Post = /** @class */ (function () {
     function Post(id, title, content, cover_url, created_at, last_modified_at, view_count, comment_count, is_hidden, is_locked, is_sticky, slug, type) {
         this.id = id;
@@ -19,4 +18,4 @@ var Post = /** @class */ (function () {
     }
     return Post;
 }());
-exports.Post = Post;
+exports.default = Post;

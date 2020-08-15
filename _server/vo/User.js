@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
 var User = /** @class */ (function () {
     function User(id, account, username, email, password, avatar_url, bio, power, social_buttons, last_activated_at) {
         this.id = id;
@@ -31,5 +30,4 @@ var User = /** @class */ (function () {
     };
     return User;
 }());
-exports.User = User;
-module.exports = User;
+exports.default = User;

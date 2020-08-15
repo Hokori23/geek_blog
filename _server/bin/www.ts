@@ -27,7 +27,7 @@ namespace bin {
    * Listen on provided port, on all network interfaces.
    */
   SERVER.listen(PORT, () => {
-    console.log(`listening on port ${PORT}!`);
+    console.log(`服务器开始监听 ${PORT} 端口！`);
   });
   SERVER.on('error', onError);
   SERVER.on('listening', onListening);
@@ -59,16 +59,16 @@ namespace bin {
       throw error;
     }
 
-    const bind = typeof PORT === 'string' ? 'Pipe ' + PORT : 'Port ' + PORT;
+    const bind = typeof PORT === 'string' ? 'Pipe ' + PORT : '端口 ' + PORT;
 
     // handle specific listen errors with friendly messages
     switch (error.code) {
       case 'EACCES':
-        console.error(bind + ' requires elevated privileges');
+        console.error(bind + ' 需要更高权限');
         process.exit(1);
         break;
       case 'EADDRINUSE':
-        console.error(bind + ' is already in use');
+        console.error(bind + ' 已被占用');
         process.exit(1);
         break;
       default:
@@ -82,7 +82,7 @@ namespace bin {
   function onListening() {
     const addr = SERVER.address();
     const bind =
-      typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-    DEBUG('Listening on ' + bind);
+      typeof addr === 'string' ? 'pipe ' + addr : '端口 ' + addr.port;
+    DEBUG('正在监听' + bind);
   }
 }

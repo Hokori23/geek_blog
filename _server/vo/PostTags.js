@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostTags = void 0;
 var PostTags = /** @class */ (function () {
     function PostTags(id, post_id, name, description, parent_id, icon_display, icon_class, icon_color) {
         this.id = id;
@@ -14,4 +13,4 @@ var PostTags = /** @class */ (function () {
     }
     return PostTags;
 }());
-exports.PostTags = PostTags;
+exports.default = PostTags;

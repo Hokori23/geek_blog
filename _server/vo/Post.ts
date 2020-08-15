@@ -1,4 +1,4 @@
-export interface Post {
+interface Post {
   id: number;
   title: string;
   content: string;
@@ -14,7 +14,7 @@ export interface Post {
   type: boolean;
 }
 
-export class Post {
+class Post {
   constructor(
     id: number,
     title: string,
@@ -45,3 +45,5 @@ export class Post {
     this.type = type;
   }
 }
+
+export default Post;

@@ -1,10 +1,11 @@
-import { User } from '../vo';
+import { User } from '@vo';
+import * as Public from '@public';
 
 /**
  * 添加用户
  * @param { User } user
  */
-const Add_User = (user: User): Promise<{}> => {
+const Create = (user: User): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     const sql = `
       INSERT INTO user
@@ -12,7 +13,7 @@ const Add_User = (user: User): Promise<{}> => {
     `;
     const params = user.toArray();
     const db = await DB();
-    db.query(sql, params, (err: Error, res: Response) => {
+    db.query(sql, params, (err: Error, res: Array<any>) => {
       if (err) {
         reject(err);
       }
@@ -26,13 +27,13 @@ const Add_User = (user: User): Promise<{}> => {
  * 查询单个用户
  * @param { string } account
  */
-const Retrieve_User = (account: string): Promise<{}> => {
+const Retrieve = (account: string): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     const sql = `
       SELECT * FROM user WHERE account = ?
     `;
     const db = await DB();
-    db.query(sql, [account], (err: Error, res: Response) => {
+    db.query(sql, [account], (err: Error, res: Array<any>) => {
       if (err) {
         reject(err);
       }
@@ -46,7 +47,7 @@ const Retrieve_User = (account: string): Promise<{}> => {
  * 查询单个用户（不含密码）
  * @param { string } account
  */
-const Retrieve_User_Safely = (account: string): Promise<{}> => {
+const Retrieve_Safely = (account: string): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     let sql = `
       SELECT
@@ -67,7 +68,7 @@ const Retrieve_User_Safely = (account: string): Promise<{}> => {
       WHERE account = ?
     `;
     const db = await DB();
-    db.query(sql, [account], (err: Error, res: Response) => {
+    db.query(sql, [account], (err: Error, res: Array<any>) => {
       if (err) {
         reject(err);
       }
@@ -82,7 +83,7 @@ const Retrieve_User_Safely = (account: string): Promise<{}> => {
  * @param { User } oldUser
  * @param { User } newUser
  */
-const Update_User = (oldUser: User, newUser: User): Promise<{}> => {
+const Update = (oldUser: User, newUser: User): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     let sql = `
       UPDATE user SET
@@ -101,10 +102,10 @@ const Update_User = (oldUser: User, newUser: User): Promise<{}> => {
     `;
 
     // 混合用户信息
-    newUser = _PUBLIC.assign([oldUser, newUser], true);
+    newUser = Public.assign([oldUser, newUser], true);
     const params = newUser.toArray().push(newUser.account);
     const db = await DB();
-    db.query(sql, params, (err: Error, res: Response) => {
+    db.query(sql, params, (err: Error, res: Array<any>) => {
       if (err) {
         reject(err);
       }
@@ -118,13 +119,13 @@ const Update_User = (oldUser: User, newUser: User): Promise<{}> => {
  * 删除用户账号
  * @param { string} account
  */
-const Delete_User = (account: string): Promise<{}> => {
+const Delete = (account: string): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     const sql = `
     DELETE FROM user WHERE account = ?
   `;
     const db = await DB();
-    db.query(sql, [account], (err: Error, res: Response) => {
+    db.query(sql, [account], (err: Error, res: Array<any>) => {
       if (err) {
         reject(err);
       }
@@ -134,11 +135,4 @@ const Delete_User = (account: string): Promise<{}> => {
   });
 };
 
-
-export {
-  Add_User,
-  Retrieve_User,
-  Retrieve_User_Safely,
-  Update_User,
-  Delete_User
-};
+export default { Create, Retrieve, Retrieve_Safely, Update, Delete };

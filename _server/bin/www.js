@@ -25,7 +25,7 @@ var bin;
      * Listen on provided port, on all network interfaces.
      */
     SERVER.listen(PORT, function () {
-        console.log("listening on port " + PORT + "!");
+        console.log("\u670D\u52A1\u5668\u5F00\u59CB\u76D1\u542C " + PORT + " \u7AEF\u53E3\uFF01");
     });
     SERVER.on('error', onError);
     SERVER.on('listening', onListening);
@@ -51,15 +51,15 @@ var bin;
         if (error.syscall !== 'listen') {
             throw error;
         }
-        var bind = typeof PORT === 'string' ? 'Pipe ' + PORT : 'Port ' + PORT;
+        var bind = typeof PORT === 'string' ? 'Pipe ' + PORT : '端口 ' + PORT;
         // handle specific listen errors with friendly messages
         switch (error.code) {
             case 'EACCES':
-                console.error(bind + ' requires elevated privileges');
+                console.error(bind + ' 需要更高权限');
                 process.exit(1);
                 break;
             case 'EADDRINUSE':
-                console.error(bind + ' is already in use');
+                console.error(bind + ' 已被占用');
                 process.exit(1);
                 break;
             default:
@@ -71,7 +71,7 @@ var bin;
      */
     function onListening() {
         var addr = SERVER.address();
-        var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-        DEBUG('Listening on ' + bind);
+        var bind = typeof addr === 'string' ? 'pipe ' + addr : '端口 ' + addr.port;
+        DEBUG('正在监听' + bind);
     }
 })(bin || (bin = {}));

@@ -1,4 +1,4 @@
-export interface PostTags {
+interface PostTags {
 	id: number;
 	post_id: number;
 	name: string;
@@ -9,7 +9,7 @@ export interface PostTags {
 	icon_color: string;
 }
 
-export class PostTags {
+class PostTags {
 	constructor(
 		id: number,
 		post_id: number,
@@ -30,3 +30,5 @@ export class PostTags {
 		this.icon_color = icon_color;
 	}
 }
+
+export default PostTags
