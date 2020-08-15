@@ -12,11 +12,12 @@ module.exports = {
         'Refactor', //重构（即不是新增功能，也不是修改bug的代码变动）
         'Test', //增加测试
         'Chore', //构建过程或辅助工具的变动
-        'Revert' //回滚
+        'Revert', //回滚
+        'Temp' //临时保存
       ]
     ],
     'type-case': [0],
     'subject-case': [0],
     'subject-max-length': [2, 'always', 255]
   }
-};
+}
