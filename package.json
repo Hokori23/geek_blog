@@ -8,9 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "cd _server",
     "server:install": "cd _server && npm i -f",
-    "server:build": "cd _server && tsc || npm run ?server:build",
-    "?server:build": "echo Error: \"编译.ts文件需要全局安装typescript, 请执行命令npm i -g typescript\"",
-    "server:install:ts": "cd_server && npm i -g typescript",
+    "server:build": "cd _server && npm run build",
+    "server:install:ts": "cd_server && npm i typescript",
     "client": "cd _client && npm run dev",
     "client:install": "cd _client && npm i -f"
   },

@@ -6,7 +6,13 @@ module.exports = {
    */
 
   serverConfig: {
-    port: '8080'
+    port: '8080',
+    crytpo: {
+      // 每次分段加密的字符串长度（优先度高于cryptCount字段）
+      onceCryptLength: 5,
+      // 一次加密至多分段几次加密
+      cryptCount: 5
+    }
   },
   /** 数据库配置 */
   dataBaseConfig: {

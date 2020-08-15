@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www.js",
-    "?server:build": "echo Error: \"编译.ts文件需要全局安装typescript, 请执行命令npm i -g typescript\""
+    "build": "tsc",
+    "build:watch": "tsc -w"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -17,6 +18,7 @@
   "devDependencies": {
     "@types/node": "^14.0.27",
     "jwt-simple": "^0.5.6",
-    "mysql2": "^2.1.0"
+    "mysql2": "^2.1.0",
+    "typescript": "^3.9.7"
   }
 }
