@@ -1,6 +1,4 @@
-const { Interface } = require("readline");
-
-interface PostTags {
+export interface PostTags {
 	id: number;
 	post_id: number;
 	name: string;
@@ -11,7 +9,7 @@ interface PostTags {
 	icon_color: string;
 }
 
-class PostTags {
+export class PostTags {
 	constructor(
 		id: number,
 		post_id: number,
@@ -32,4 +30,3 @@ class PostTags {
 		this.icon_color = icon_color;
 	}
 }
-module.exports = PostTags
