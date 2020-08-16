@@ -7,7 +7,9 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Restful = exports.assign = exports.isUndef = exports.isDef = void 0;
+exports.Restful = exports.crypto = exports.assign = exports.isUndef = exports.isDef = void 0;
+var _config_1 = require("../../geekblog.config.js");
+var crytpoConfig = _config_1.serverConfig.crytpo;
 var CRYPTO = require('crypto');
 /**
  * 判断变量是否已定义
@@ -26,13 +28,13 @@ var isUndef = function (v) {
 };
 exports.isUndef = isUndef;
 /**
- * @param { array } objArrg
+ * @param { array } objArr
  * @param { boolean } flag
  * @description 当flag == true时，后面源对象可枚举属性isUndef时，不会覆盖前方对象属性
  */
 var assign = function (objArr, flag) {
     if (isUndef(objArr)) {
-        return new ReferenceError('Excepted for arguments: [objArr, flag]');
+        return new ReferenceError('Excepted for arguments: [ objArr: Array, flag: Boolean ]');
     }
     // 检查传参类型
     if (!(objArr instanceof Array)) {
@@ -59,7 +61,39 @@ var assign = function (objArr, flag) {
     return objArr[0];
 };
 exports.assign = assign;
-var crypto = function (v) { };
+var crypto = function (v) {
+    var onceCryptLength = crytpoConfig.onceCryptLength, cryptCount = crytpoConfig.cryptCount, digest = crytpoConfig.digest;
+    var md5 = CRYPTO.createHash('md5');
+    var vLength = v.length;
+    // 每次分段加密的字符串最大长度
+    if (isDef(onceCryptLength) && onceCryptLength > 0) {
+        while (v) {
+            var tempV = v.slice(0, onceCryptLength);
+            console.log(v, tempV);
+            v = v.slice(onceCryptLength);
+            md5.update(tempV + " - ");
+        }
+        return md5.digest(digest);
+    }
+    // 一次加密至多分段几次加密
+    if (isDef(cryptCount) && cryptCount > 0) {
+        if (vLength <= cryptCount) {
+            return md5.update(v).digest(digest);
+        }
+        else {
+            var onceCryptLength_1 = ~~(vLength / cryptCount);
+            while (v) {
+                var tempV = v.slice(0, onceCryptLength_1);
+                console.log(v, tempV);
+                v = v.slice(onceCryptLength_1);
+                md5.update(tempV + " - ");
+            }
+            return md5.digest(digest);
+        }
+    }
+    throw new ReferenceError('Excepted for crytpo from serverConfig: [ onceCryptLength: Number > 0, cryptCount: Number > 0 ]');
+};
+exports.crypto = crypto;
 var Restful = /** @class */ (function () {
     function Restful(code, message, data) {
         if (data === void 0) { data = {}; }

@@ -1,3 +1,5 @@
+import { serverConfig } from '@config';
+const crytpoConfig = serverConfig.crytpo;
 const CRYPTO = require('crypto');
 
 /**
@@ -17,13 +19,15 @@ const isUndef = (v: any): boolean => {
 };
 
 /**
- * @param { array } objArrg
+ * @param { array } objArr
  * @param { boolean } flag
  * @description 当flag == true时，后面源对象可枚举属性isUndef时，不会覆盖前方对象属性
  */
 const assign = (objArr: Array<Object>, flag?: boolean): any => {
   if (isUndef(objArr)) {
-    return new ReferenceError('Excepted for arguments: [objArr, flag]');
+    return new ReferenceError(
+      'Excepted for arguments: [ objArr: Array, flag: Boolean ]'
+    );
   }
   // 检查传参类型
   if (!(objArr instanceof Array)) {
@@ -51,7 +55,39 @@ const assign = (objArr: Array<Object>, flag?: boolean): any => {
   return objArr[0];
 };
 
-const crypto = (v: string) => {};
+const crypto = (v: string) => {
+  const { onceCryptLength, cryptCount, digest } = crytpoConfig;
+  const md5 = CRYPTO.createHash('md5');
+  const vLength = v.length;
+  // 每次分段加密的字符串最大长度
+  if (isDef(onceCryptLength) && onceCryptLength > 0) {
+    while (v) {
+      const tempV = v.slice(0, onceCryptLength);
+      console.log(v, tempV);
+      v = v.slice(onceCryptLength);
+      md5.update(`${tempV} - `);
+    }
+    return md5.digest(digest);
+  }
+  // 一次加密至多分段几次加密
+  if (isDef(cryptCount) && cryptCount > 0) {
+    if (vLength <= cryptCount) {
+      return md5.update(v).digest(digest);
+    } else {
+      const onceCryptLength = ~~(vLength / cryptCount);
+      while (v) {
+        const tempV = v.slice(0, onceCryptLength);
+        console.log(v, tempV);
+        v = v.slice(onceCryptLength);
+        md5.update(`${tempV} - `);
+      }
+      return md5.digest(digest);
+    }
+  }
+  throw new ReferenceError(
+    'Excepted for crytpo from serverConfig: [ onceCryptLength: Number > 0, cryptCount: Number > 0 ]'
+  );
+};
 /**
  * Restful API类声明
  */
@@ -73,4 +109,4 @@ class Restful {
     return new Restful(e.errno, e.message);
   }
 }
-export { isDef, isUndef, assign, Restful };
+export { isDef, isUndef, assign, crypto, Restful };
