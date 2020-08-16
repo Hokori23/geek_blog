@@ -1,10 +1,20 @@
 module.exports = {
   /**
    *
+   * 前端配置
+   *
+   */
+  clientConfig: {
+    /** 部署时的公共路径 */
+    publicPath: 'https://hokori.online',
+
+  },
+
+  /**
+   *
    * 后端配置
    *
    */
-
   serverConfig: {
     port: '8080',
     crytpo: {
@@ -17,6 +27,8 @@ module.exports = {
       // 可选值：['hex', 'Base64', ...]
       digest: 'hex'
     },
+    // 主机
+    host: 'https://api.hokori.online',
     // 完整URL为： nginx配置下的转发路径 `${location}`
     baseURL: '/geekblog'
   },
