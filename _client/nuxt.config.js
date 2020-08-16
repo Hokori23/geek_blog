@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors';
+import { clientConfig, serverConfig } from '../geekblog.config';
 
 export default {
   /*
@@ -35,9 +36,9 @@ export default {
   /**
    * 全局middleware
    */
-//   router: {
-//     middleware: ['test']
-//   },
+  //   router: {
+  //     middleware: ['test']
+  //   },
   /*
    ** Global CSS
    */
@@ -77,10 +78,19 @@ export default {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {},
+  axios: {
+    baseURL: `http://localhost:${serverConfig.port}`
+  },
+
+  publicRuntimeConfig: {
+    axios: {
+      browserBaseURL: process.env.BROWSER_BASE_URL
+    }
+  },
   dev: process.env.NODE_ENV !== 'production',
   env: {
-    baseUrl: process.env.BASE_URL || 'http://localhost:3000'
+    // baseUrl: process.env.BASE_URL || clientConfig.publicPath
+    baseUrl: clientConfig.publicPath
   },
   /*
    ** vuetify module configuration

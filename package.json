@@ -5,9 +5,10 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "cd _server",
     "client": "cd _client && npm run dev",
-    "client:install": "cd _client && npm install"
+    "client:install": "cd _client && npm install -f",
+    "client:build": "cd _client && npm run build",
+    "client:serve": "cd _client && npm run build && npm run serve"
   },
   "repository": {
     "type": "git",
