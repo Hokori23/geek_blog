@@ -1,5 +1,6 @@
 import { User } from '@vo';
 import * as Public from '@public';
+import DB from '@database';
 
 /**
  * 添加用户
@@ -47,7 +48,7 @@ const Retrieve = (account: string): Promise<any> => {
  * 查询单个用户（不含密码）
  * @param { string } account
  */
-const Retrieve_Safely = (account: string): Promise<any> => {
+const Retrieve__Safely = (account: string): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     let sql = `
       SELECT
@@ -65,10 +66,46 @@ const Retrieve_Safely = (account: string): Promise<any> => {
       }
     });
     sql += `
+      FROM user
       WHERE account = ?
     `;
     const db = await DB();
     db.query(sql, [account], (err: Error, res: Array<any>) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(res);
+    });
+    db.end();
+  });
+};
+
+/**
+ * 遍历用户（不含密码）
+ */
+const Retrieve__All__Safely = (): Promise<any> => {
+  return new Promise(async (resolve, reject) => {
+    let sql = `
+      SELECT
+    `;
+
+    // 拼接SQL语句
+    const tempUser: User = new User();
+    const keys = Object.keys(tempUser);
+    const keysLength = keys.length;
+    keys.forEach((v, index) => {
+      if (v !== 'password') {
+        sql += `
+        ${v}${index === keysLength ? '' : ','}
+        `;
+      }
+    });
+    sql += `
+      FROM user
+      WHERE account = ?
+    `;
+    const db = await DB();
+    db.query(sql, (err: Error, res: Array<any>) => {
       if (err) {
         reject(err);
       }
@@ -135,4 +172,11 @@ const Delete = (account: string): Promise<any> => {
   });
 };
 
-export default { Create, Retrieve, Retrieve_Safely, Update, Delete };
+export default {
+  Create,
+  Retrieve,
+  Retrieve__Safely,
+  Retrieve__All__Safely,
+  Update,
+  Delete
+};

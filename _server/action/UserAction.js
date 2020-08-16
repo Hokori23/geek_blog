@@ -54,9 +54,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var _vo_1 = require("@vo");
-var Public = __importStar(require("@public"));
+var _vo_1 = require("../vo");
+var Public = __importStar(require("../_public"));
+var _database_1 = __importDefault(require("../database"));
 /**
  * 添加用户
  * @param { User } user
@@ -69,7 +73,7 @@ var Create = function (user) {
                 case 0:
                     sql = "\n      INSERT INTO user\n      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n    ";
                     params = user.toArray();
-                    return [4 /*yield*/, DB()];
+                    return [4 /*yield*/, _database_1.default()];
                 case 1:
                     db = _a.sent();
                     db.query(sql, params, function (err, res) {
@@ -95,7 +99,7 @@ var Retrieve = function (account) {
             switch (_a.label) {
                 case 0:
                     sql = "\n      SELECT * FROM user WHERE account = ?\n    ";
-                    return [4 /*yield*/, DB()];
+                    return [4 /*yield*/, _database_1.default()];
                 case 1:
                     db = _a.sent();
                     db.query(sql, [account], function (err, res) {
@@ -114,7 +118,7 @@ var Retrieve = function (account) {
  * 查询单个用户（不含密码）
  * @param { string } account
  */
-var Retrieve_Safely = function (account) {
+var Retrieve__Safely = function (account) {
     return new Promise(function (resolve, reject) { return __awaiter(void 0, void 0, void 0, function () {
         var sql, tempUser, keys, keysLength, db;
         return __generator(this, function (_a) {
@@ -129,11 +133,45 @@ var Retrieve_Safely = function (account) {
                             sql += "\n        " + v + (index === keysLength ? '' : ',') + "\n        ";
                         }
                     });
-                    sql += "\n      WHERE account = ?\n    ";
-                    return [4 /*yield*/, DB()];
+                    sql += "\n      FROM user\n      WHERE account = ?\n    ";
+                    return [4 /*yield*/, _database_1.default()];
                 case 1:
                     db = _a.sent();
                     db.query(sql, [account], function (err, res) {
+                        if (err) {
+                            reject(err);
+                        }
+                        resolve(res);
+                    });
+                    db.end();
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+};
+/**
+ * 遍历用户（不含密码）
+ */
+var Retrieve__All__Safely = function () {
+    return new Promise(function (resolve, reject) { return __awaiter(void 0, void 0, void 0, function () {
+        var sql, tempUser, keys, keysLength, db;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    sql = "\n      SELECT\n    ";
+                    tempUser = new _vo_1.User();
+                    keys = Object.keys(tempUser);
+                    keysLength = keys.length;
+                    keys.forEach(function (v, index) {
+                        if (v !== 'password') {
+                            sql += "\n        " + v + (index === keysLength ? '' : ',') + "\n        ";
+                        }
+                    });
+                    sql += "\n      FROM user\n      WHERE account = ?\n    ";
+                    return [4 /*yield*/, _database_1.default()];
+                case 1:
+                    db = _a.sent();
+                    db.query(sql, function (err, res) {
                         if (err) {
                             reject(err);
                         }
@@ -166,7 +204,7 @@ var Update = function (oldUser, newUser) {
                     // 混合用户信息
                     newUser = Public.assign([oldUser, newUser], true);
                     params = newUser.toArray().push(newUser.account);
-                    return [4 /*yield*/, DB()];
+                    return [4 /*yield*/, _database_1.default()];
                 case 1:
                     db = _a.sent();
                     db.query(sql, params, function (err, res) {
@@ -192,7 +230,7 @@ var Delete = function (account) {
             switch (_a.label) {
                 case 0:
                     sql = "\n    DELETE FROM user WHERE account = ?\n  ";
-                    return [4 /*yield*/, DB()];
+                    return [4 /*yield*/, _database_1.default()];
                 case 1:
                     db = _a.sent();
                     db.query(sql, [account], function (err, res) {
@@ -207,4 +245,11 @@ var Delete = function (account) {
         });
     }); });
 };
-exports.default = { Create: Create, Retrieve: Retrieve, Retrieve_Safely: Retrieve_Safely, Update: Update, Delete: Delete };
+exports.default = {
+    Create: Create,
+    Retrieve: Retrieve,
+    Retrieve__Safely: Retrieve__Safely,
+    Retrieve__All__Safely: Retrieve__All__Safely,
+    Update: Update,
+    Delete: Delete
+};
