@@ -55,6 +55,10 @@ const assign = (objArr: Array<Object>, flag?: boolean): any => {
   return objArr[0];
 };
 
+/**
+ * 加密函数
+ * @param { string } v 加密字段
+ */
 const crypto = (v: string) => {
   const { onceCryptLength, cryptCount, digest } = crytpoConfig;
   const md5 = CRYPTO.createHash('md5');
@@ -63,7 +67,6 @@ const crypto = (v: string) => {
   if (isDef(onceCryptLength) && onceCryptLength > 0) {
     while (v) {
       const tempV = v.slice(0, onceCryptLength);
-      console.log(v, tempV);
       v = v.slice(onceCryptLength);
       md5.update(`${tempV} - `);
     }
@@ -77,7 +80,6 @@ const crypto = (v: string) => {
       const onceCryptLength = ~~(vLength / cryptCount);
       while (v) {
         const tempV = v.slice(0, onceCryptLength);
-        console.log(v, tempV);
         v = v.slice(onceCryptLength);
         md5.update(`${tempV} - `);
       }
@@ -88,6 +90,7 @@ const crypto = (v: string) => {
     'Excepted for crytpo from serverConfig: [ onceCryptLength: Number > 0, cryptCount: Number > 0 ]'
   );
 };
+
 /**
  * Restful API类声明
  */
@@ -109,4 +112,6 @@ class Restful {
     return new Restful(e.errno, e.message);
   }
 }
+
 export { isDef, isUndef, assign, crypto, Restful };
+export default { isDef, isUndef, assign, crypto, Restful };

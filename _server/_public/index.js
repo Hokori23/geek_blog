@@ -61,6 +61,10 @@ var assign = function (objArr, flag) {
     return objArr[0];
 };
 exports.assign = assign;
+/**
+ * 加密函数
+ * @param { string } v 加密字段
+ */
 var crypto = function (v) {
     var onceCryptLength = crytpoConfig.onceCryptLength, cryptCount = crytpoConfig.cryptCount, digest = crytpoConfig.digest;
     var md5 = CRYPTO.createHash('md5');
@@ -69,7 +73,6 @@ var crypto = function (v) {
     if (isDef(onceCryptLength) && onceCryptLength > 0) {
         while (v) {
             var tempV = v.slice(0, onceCryptLength);
-            console.log(v, tempV);
             v = v.slice(onceCryptLength);
             md5.update(tempV + " - ");
         }
@@ -84,7 +87,6 @@ var crypto = function (v) {
             var onceCryptLength_1 = ~~(vLength / cryptCount);
             while (v) {
                 var tempV = v.slice(0, onceCryptLength_1);
-                console.log(v, tempV);
                 v = v.slice(onceCryptLength_1);
                 md5.update(tempV + " - ");
             }
@@ -107,3 +109,4 @@ var Restful = /** @class */ (function () {
     return Restful;
 }());
 exports.Restful = Restful;
+exports.default = { isDef: isDef, isUndef: isUndef, assign: assign, crypto: crypto, Restful: Restful };

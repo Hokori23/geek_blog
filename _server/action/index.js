@@ -6,3 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserAction = void 0;
 var UserAction_1 = __importDefault(require("./UserAction"));
 exports.UserAction = UserAction_1.default;
+exports.default = {
+    User: UserAction_1.default
+};

@@ -14,4 +14,4 @@ const DB = async () => {
     console.log('连接数据库失败');
   }
 };
-module.exports = DB;
+export default DB

@@ -36,31 +36,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var dataBaseConfig = require('../../geekblog.config').dataBaseConfig;
-var MYSQL2 = require('mysql2');
-var DB = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var connection, e_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+var _service_1 = require("../service");
+var _vo_1 = require("../vo");
+var _public_1 = require("../_public");
+var EXPRESS = require('express');
+var ROUTER = EXPRESS.Router();
+/* GET users listing. */
+ROUTER.get('/', function (req, res, next) {
+    console.log(req.query);
+    console.log(req.body);
+    res.status(200).json({
+        code: 0,
+        message: 'OK'
+    });
+});
+ROUTER.get('/retrieve', function (req, res, next) { });
+/**
+ * 注册
+ * @path /register
+ */
+ROUTER.post('/register', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
-                return [4 /*yield*/, MYSQL2.createConnection(dataBaseConfig)];
-            case 1:
-                connection = _a.sent();
-                return [4 /*yield*/, connection.connect(function (err) {
-                        if (err) {
-                            Promise.reject(err);
-                        }
-                    })];
-            case 2:
-                _a.sent();
-                return [2 /*return*/, connection];
-            case 3:
-                e_1 = _a.sent();
-                console.log('连接数据库失败');
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                user = _vo_1.User.clone(req.body);
+                if (!user.checkIntegrity(['account', 'username', 'email', 'password'])) {
+                    return [2 /*return*/, res.status(400).json(new _public_1.Restful(1, '参数错误'))];
+                }
+                _b = (_a = res.status(200)).json;
+                return [4 /*yield*/, _service_1.UserService.Create(user)];
+            case 1: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
         }
     });
-}); };
-exports.default = DB;
+}); });
+// ROUTER.post()
+exports.default = ROUTER;

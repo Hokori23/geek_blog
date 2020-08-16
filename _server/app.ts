@@ -1,18 +1,23 @@
-const EXPRESS = require('express')
+import { Home as HomeRouter, User as UserRouter } from '@routes';
+
+const EXPRESS = require('express');
 // const PATH = require("path");
 // const LOGGER = require("morgan");
 
-const INDEX_ROUTER = require('./routes/index')
-const USERS_ROUTER = require('./routes/users')
+const APP = EXPRESS();
 
-const APP = EXPRESS()
+//parse application/x-www-form-urlencoded
+APP.use(EXPRESS.urlencoded({ extended: true }))
+//parse application/json
+APP.use(EXPRESS.json())
+
 
 // APP.use(LOGGER("dev"));
-APP.use(EXPRESS.json())
-APP.use(EXPRESS.urlencoded({ extended: false }))
+APP.use(EXPRESS.json());
+APP.use(EXPRESS.urlencoded({ extended: false }));
 // app.use(express.static(PATH.join(__dirname, 'public')));
 
-APP.use('/', INDEX_ROUTER)
-APP.use('/users', USERS_ROUTER)
+APP.use('/', HomeRouter)
+APP.use('/user', UserRouter);
 
-module.exports = APP
+module.exports = APP;
