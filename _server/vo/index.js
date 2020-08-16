@@ -10,3 +10,4 @@ var Post_1 = __importDefault(require("./Post"));
 exports.Post = Post_1.default;
 var PostTags_1 = __importDefault(require("./PostTags"));
 exports.PostTags = PostTags_1.default;
+exports.default = { User: User_1.default, Post: Post_1.default, PostTags: PostTags_1.default };

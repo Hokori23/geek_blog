@@ -14,7 +14,7 @@ interface Post {
   type: boolean;
 }
 
-class Post {
+class Post implements Post{
   constructor(
     id: number,
     title: string,

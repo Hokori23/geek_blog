@@ -9,7 +9,7 @@ interface PostTags {
 	icon_color: string;
 }
 
-class PostTags {
+class PostTags implements PostTags{
 	constructor(
 		id: number,
 		post_id: number,
