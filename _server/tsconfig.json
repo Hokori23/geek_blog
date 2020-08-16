@@ -48,9 +48,20 @@
       "@action": ["action"],
       "@service": ["service"],
       "@public": ["_public"],
-      "@config": ["../geekblog.config.js"]
+      "@config": ["../geekblog.config.js"],
+      "@vo/*": ["vo/*"],
+      "@action/*": ["action/*"],
+      "@service/*": ["service/*"],
+      "@public/*": ["_public/*"],
+      "@config/*": ["../geekblog.config.js/*"]
       
     },                                        /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
+    "plugins": [
+        {
+            "transform": "@zerollup/ts-transform-paths",
+            "exclude": ["*"]
+        }
+    ],
     "rootDirs": []                            /* List of root folders whose combined content represents the structure of the project at runtime. */,
     "typeRoots": [
       "../node_modules/@types"
