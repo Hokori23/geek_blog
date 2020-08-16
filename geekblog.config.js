@@ -16,12 +16,14 @@ module.exports = {
       // 如果提供了 encoding，则返回字符串，否则返回 Buffer
       // 可选值：['hex', 'Base64', ...]
       digest: 'hex'
-    }
+    },
+    // 完整URL为： nginx配置下的转发路径 `${location}`
+    baseURL: '/geekblog'
   },
   /** 数据库配置 */
   dataBaseConfig: {
     // 主机，如IP 或 'localhost'
-    host: 'localhost',
+    host: '101.201.239.229',
 
     // 数据库名
     database: 'geek_blog',

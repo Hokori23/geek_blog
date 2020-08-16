@@ -9,6 +9,8 @@
     "server": "cd _server",
     "server:install": "cd _server && npm i -f",
     "server:build": "cd _server && npm run build",
+    "server:build:watch": "cd _server && npm run build:watch",
+    "server:serve": "cd _server && npm run serve",
     "server:install:ts": "cd_server && npm i typescript",
     "client": "cd _client && npm run dev",
     "client:install": "cd _client && npm i -f"
