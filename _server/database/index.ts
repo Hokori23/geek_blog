@@ -12,6 +12,7 @@ const DB = async () => {
     return connection;
   } catch (e) {
     console.log('连接数据库失败');
+    Promise.reject(e);
   }
 };
-export default DB
+export default DB;

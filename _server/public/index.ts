@@ -2,6 +2,8 @@ import { serverConfig } from '@config';
 const crytpoConfig = serverConfig.crytpo;
 const CRYPTO = require('crypto');
 
+const QUERY_METHODS = ['GET', 'DELETE'];
+const BODY_METHODS = ['POST', 'PUT'];
 /**
  * 判断变量是否已定义
  * @param { object } v
@@ -25,13 +27,11 @@ const isUndef = (v: any): boolean => {
  */
 const assign = (objArr: Array<Object>, flag?: boolean): any => {
   if (isUndef(objArr)) {
-    return new ReferenceError(
-      'Excepted for arguments: [ objArr: Array, flag: Boolean ]'
-    );
+    throw new ReferenceError('参数错误: [ objArr: Array, flag?: Boolean ]');
   }
   // 检查传参类型
   if (!(objArr instanceof Array)) {
-    throw new TypeError('Excepted for Array at 1st argument');
+    throw new TypeError('参数类型错误：[ objArr: Array<Object> ]');
   }
 
   if (!flag) {
@@ -44,7 +44,7 @@ const assign = (objArr: Array<Object>, flag?: boolean): any => {
       typeof objArr[i] !== 'object' ||
       objArr[i].toString() !== '[object Object]'
     ) {
-      throw new TypeError('Excepted for Object arguments in 1st Array');
+      throw new TypeError('参数类型错误: [ objArr: Array<Object> ]');
     }
     Object.keys(objArr[i]).forEach((v: string): void => {
       if (isDef(objArr[i][v])) {
@@ -87,7 +87,7 @@ const crypto = (v: string) => {
     }
   }
   throw new ReferenceError(
-    'Excepted for crytpo from serverConfig: [ onceCryptLength: Number > 0, cryptCount: Number > 0 ]'
+    'geekblog.config.js缺少字段serverConfig: [ onceCryptLength: Number > 0, cryptCount: Number > 0 ]'
   );
 };
 
@@ -113,5 +113,13 @@ class Restful {
   }
 }
 
-export { isDef, isUndef, assign, crypto, Restful };
-export default { isDef, isUndef, assign, crypto, Restful };
+export { QUERY_METHODS, BODY_METHODS, isDef, isUndef, assign, crypto, Restful };
+export default {
+  QUERY_METHODS,
+  BODY_METHODS,
+  isDef,
+  isUndef,
+  assign,
+  crypto,
+  Restful
+};

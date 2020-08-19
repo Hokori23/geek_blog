@@ -9,3 +9,6 @@ routes/*.js
 service/*.js
 vo/*.js
 app.js
+
+# secure files
+middleware/jwt.ts
