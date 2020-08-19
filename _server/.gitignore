@@ -1,3 +1,11 @@
 node_modules/
 
-dist/
+action/*.js
+bin/*.js
+database/*.js
+middleware/*.js
+public/*.js
+routes/*.js
+service/*.js
+vo/*.js
+app.js

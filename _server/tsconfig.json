@@ -47,15 +47,15 @@
       "@vo": ["vo"],
       "@action": ["action"],
       "@service": ["service"],
-      "@public": ["_public"],
+      "@public": ["public"],
       "@routes": ["routes"],
       "@database": ["database"],
 
       "@vo/*": ["vo/*"],
       "@action/*": ["action/*"],
       "@service/*": ["service/*"],
-      "@public/*": ["_public/*"],
-      "@routes/*": ["_routes/*"],
+      "@public/*": ["public/*"],
+      "@routes/*": ["routes/*"],
       "@database/*": ["database/*"],
 
       "@config": ["../geekblog.config.js"]
