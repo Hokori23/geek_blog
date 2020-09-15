@@ -5,7 +5,8 @@
   "author": "Hokori",
   "private": true,
   "scripts": {
-    "serve": "node ./bin/www.js",
+    "serve": "cross-env NODE_ENV=production node ./bin/www.js",
+    "dev": "node ./bin/www.js",
     "build": "ttsc",
     "build:watch": "ttsc -w"
   },
@@ -17,6 +18,7 @@
   "devDependencies": {
     "@types/node": "^14.0.27",
     "@zerollup/ts-transform-paths": "^1.7.18",
+    "cross-env": "^7.0.2",
     "ttypescript": "^1.5.10",
     "typescript": "^3.9.7"
   }
