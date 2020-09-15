@@ -1,9 +1,14 @@
 import { serverConfig } from '@config';
 const crytpoConfig = serverConfig.crytpo;
-const CRYPTO = require('crypto');
+import moment from 'moment';
+import CRYPTO from 'crypto';
 
+/**
+ * 常量
+ */
 const QUERY_METHODS = ['GET', 'DELETE'];
 const BODY_METHODS = ['POST', 'PUT'];
+
 /**
  * 判断变量是否已定义
  * @param { object } v
@@ -21,7 +26,26 @@ const isUndef = (v: any): boolean => {
 };
 
 /**
- * @param { array } objArr
+ * 获取报错位置
+ * @param { Error } e
+ */
+const emailErrorLocation = (e: Error): void => {
+  console.log(e.stack);
+};
+
+/**
+ * 格式化成数据库接受的格式
+ * @param { number } timeStamp
+ */
+const timeFormat = (timeStamp?: number | string): string => {
+  if (timeStamp) {
+    return moment(timeStamp).format('YYYY-MM-DD HH:mm:ss');
+  }
+  return moment().format('YYYY-MM-DD HH:mm:ss');
+};
+
+/**
+ * @param { Array<Object> } objArr
  * @param { boolean } flag
  * @description 当flag == true时，后面源对象可枚举属性isUndef时，不会覆盖前方对象属性
  */
@@ -113,12 +137,24 @@ class Restful {
   }
 }
 
-export { QUERY_METHODS, BODY_METHODS, isDef, isUndef, assign, crypto, Restful };
+export {
+  QUERY_METHODS,
+  BODY_METHODS,
+  isDef,
+  isUndef,
+  emailErrorLocation,
+  timeFormat,
+  assign,
+  crypto,
+  Restful
+};
 export default {
   QUERY_METHODS,
   BODY_METHODS,
   isDef,
   isUndef,
+  emailErrorLocation,
+  timeFormat,
   assign,
   crypto,
   Restful
