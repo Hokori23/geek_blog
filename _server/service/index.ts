@@ -1,5 +1,8 @@
 import UserService from './UserService';
-export { UserService };
+import PostService from './PostService';
+
+export { UserService, PostService };
 export default {
-  User: UserService
+  User: UserService,
+  Post: PostService
 };
