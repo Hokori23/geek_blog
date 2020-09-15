@@ -1,4 +1,4 @@
-import { isUndef } from '@public';
+import { isUndef, timeFormat } from '@public';
 
 interface Post {
   id: number;
@@ -32,19 +32,19 @@ class Post implements Post {
     last_modified_at?: string,
     tag?: string
   ) {
-    this.id = id;
+    this.id = id || 1;
     this.title = title;
     this.content = content;
     this.cover_url = cover_url;
     this.created_at = created_at;
-    this.last_modified_at = last_modified_at;
-    this.view_count = view_count;
-    this.comment_count = comment_count;
-    this.is_hidden = is_hidden;
-    this.is_locked = is_locked;
-    this.is_sticky = is_sticky;
-    this.tag = tag;
-    this.type = type;
+    this.last_modified_at = last_modified_at || timeFormat(Date.now()); // 默认现在
+    this.view_count = view_count || 0;
+    this.comment_count = comment_count || 0;
+    this.is_hidden = is_hidden || false;
+    this.is_locked = is_locked || false;
+    this.is_sticky = is_sticky || false;
+    this.tag = tag || '';
+    this.type = type || false;
   }
   toArray(): Array<any> {
     const {

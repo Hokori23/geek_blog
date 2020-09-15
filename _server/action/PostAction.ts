@@ -1,5 +1,5 @@
 import { Post } from '@vo';
-import { assign } from '@public';
+import { assign, timeFormat } from '@public';
 import DB from '@database';
 
 /**
@@ -25,7 +25,7 @@ const Create = (post: Post): Promise<any> => {
 };
 
 /**
- * 查询单个帖子
+ * 通过ID查询单个帖子
  * @param { number } id
  */
 const Retrieve__ByID = (id: number): Promise<any> => {
@@ -112,6 +112,8 @@ const Update = (oldPost: Post, newPost: Post): Promise<any> => {
     sql += `
       WHERE id = ?
     `;
+    // 强制设置编辑时间
+    oldPost.last_modified_at = timeFormat(Date.now())
     // 混合帖子信息
     newPost = Post.clone(assign([oldPost, newPost], true));
     const {
