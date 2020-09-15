@@ -3,7 +3,7 @@ import { assign } from '@public';
 import DB from '@database';
 
 /**
- * 添加帖子分类
+ * 添加帖子标签
  * @param { PostTags } postTag
  */
 const Create = (postTag: PostTags): Promise<any> => {
@@ -25,7 +25,7 @@ const Create = (postTag: PostTags): Promise<any> => {
 };
 
 /**
- * 通过ID查询单个帖子分类
+ * 通过ID查询单个帖子标签
  * @param { number } id
  */
 const Retrieve__ByID = (id: number): Promise<any> => {
@@ -45,16 +45,18 @@ const Retrieve__ByID = (id: number): Promise<any> => {
 };
 
 /**
- * 通过分类名模糊查询单个帖子分类
- * @param { string } name
+ * 通过标签名查询帖子（分页）
+ * @param { string } tag
+ * @param { number } page
+ * @param { number } capacity
  */
-const Retrieve__ByName = (name: string): Promise<any> => {
+const Retrieve__ByTagName = (tag: string, page: number, capacity: number): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     const sql = `
-      SELECT * FROM post_tags WHERE name LIKE '%?%'
+      SELECT * FROM post WHERE tag = ? LIMIT ?, ?'
     `;
     const db = await DB();
-    db.query(sql, [name], (err: Error, res: Array<any>) => {
+    db.query(sql, [tag, page, capacity], (err: Error, res: Array<any>) => {
       if (err) {
         reject(err);
       }
@@ -65,7 +67,7 @@ const Retrieve__ByName = (name: string): Promise<any> => {
 };
 
 /**
- * 遍历帖子分类
+ * 遍历帖子标签名
  */
 const Retrieve__All = (): Promise<any> => {
   return new Promise(async (resolve, reject) => {
@@ -84,7 +86,7 @@ const Retrieve__All = (): Promise<any> => {
 };
 
 /**
- * 更新帖子分类
+ * 更新帖子标签
  * @param { PostTags } oldPostTag
  * @param { PostTags } newPostTag
  */
@@ -109,7 +111,7 @@ const Update = (oldPostTag: PostTags, newPostTag: PostTags): Promise<any> => {
     sql += `
       WHERE id = ?
     `;
-    // 混合贴子分类信息
+    // 混合贴子标签信息
     newPostTag = PostTags.clone(assign([oldPostTag, newPostTag], true));
     const {
       id,
@@ -145,7 +147,7 @@ const Update = (oldPostTag: PostTags, newPostTag: PostTags): Promise<any> => {
 };
 
 /**
- * 删除帖子分类
+ * 删除帖子标签
  * @param { number } id
  */
 const Delete = (id: number): Promise<any> => {
@@ -167,7 +169,7 @@ const Delete = (id: number): Promise<any> => {
 export default {
   Create,
   Retrieve__ByID,
-  Retrieve__ByName,
+  Retrieve__ByTagName,
   Retrieve__All,
   Update,
   Delete
