@@ -4,5 +4,6 @@ module.exports = {
   singleQuote: true,
   trailingComma: 'none',
   endOfLine: 'lf',
-  vueIndentScriptAndStyle: true
+  vueIndentScriptAndStyle: true,
+  arrowParens: "always"
 };

@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
 	/**
 	 *
 	 * 博客配置
@@ -14,18 +14,11 @@ module.exports = {
 		// 博主名
 		bloggerName: "",
 
+		// 部署时的公共路径
+		publicPath: "https://hokori.online",
+
 		// 插件
 		plugins: []
-	},
-
-	/**
-	 *
-	 * 前端配置
-	 *
-	 */
-	clientConfig: {
-		/** 部署时的公共路径 */
-		publicPath: "https://hokori.online"
 	},
 
 	/**
@@ -34,7 +27,7 @@ module.exports = {
 	 *
 	 */
 	serverConfig: {
-		port: "8080",
+		port: "8003",
 		crytpo: {
 			// 每次分段加密的字符串最大长度（优先度高于cryptCount字段）
 			onceCryptLength: 5,
@@ -51,11 +44,15 @@ module.exports = {
 
 			// 过期时间(单位:秒)
 			expiresTime: 60 * 60 * 24 * 3
+			// expiresTime: 1
 		},
 		// 主机
-		host: "https://api.hokori.online",
+		host:
+			// "https://api.hokori.online" ||
+			"http://localhost/",
 		// 完整URL为： nginx配置下的转发路径 `${location}`
-		baseURL: "/geekblog"
+		// baseURL: "/geekblog" || ""
+		baseURL: "/"
 	},
 
 	/**
@@ -84,3 +81,21 @@ module.exports = {
 		charset: "utf8mb4"
 	}
 };
+const { serverConfig, blogConfig } = config;
+
+// 同义化配置
+if (serverConfig.baseURL === "/") {
+	serverConfig.baseURL = "";
+}
+
+// 处理以/结尾的URL
+const DealWithURL = (url) => {
+	if (/^https?:\/\/.*\/$/.test(url)) {
+		return url.slice(0, url.length - 1);
+	}
+	return url;
+};
+serverConfig.host = DealWithURL(serverConfig.host);
+blogConfig.publicPath = DealWithURL(blogConfig.publicPath);
+
+module.exports = config;
