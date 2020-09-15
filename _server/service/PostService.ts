@@ -8,7 +8,7 @@ import { Restful } from '@public';
  */
 const Create = async (post: Post) => {
   try {
-    const res: Array<any> = await PostAction.Create(post);
+    await PostAction.Create(post);
     return new Restful(0, '创建帖子成功');
   } catch (e) {
     console.log(e.stack);
