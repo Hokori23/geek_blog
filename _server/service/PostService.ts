@@ -62,6 +62,10 @@ const Retrieve__Fuzzy = async (content: string) => {
   }
 };
 
+/**
+ * 编辑帖子
+ * @param { Post } post
+ */
 const Edit = async (post: Post) => {
   try {
     const res: Array<any> = await PostAction.Retrieve__ByID(post.id);
@@ -76,6 +80,10 @@ const Edit = async (post: Post) => {
   }
 };
 
+/**
+ * 删除帖子
+ * @param { number } id
+ */
 const Delete = async (id: number) => {
   try {
     const res: Array<any> = await PostAction.Retrieve__ByID(id);
