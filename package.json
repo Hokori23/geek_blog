@@ -11,6 +11,7 @@
     "server:build": "cd _server && npm run build",
     "server:build:watch": "cd _server && npm run build:watch",
     "server:serve": "cd _server && npm run serve",
+    "server:dev": "cd _server && npm run dev",
     "server:install:ts": "cd_server && npm i typescript",
     "client": "cd _client && npm run dev",
     "client:install": "cd _client && npm i -f"
@@ -26,9 +27,12 @@
   },
   "homepage": "https://github.com/Hokori23/geek_blog#readme",
   "dependencies": {
-    "@commitlint/cli": "^9.1.1",
-    "@commitlint/config-conventional": "^9.1.1",
-    "husky": "^4.2.5"
+    "moment": "^2.27.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
+    "husky": "^4.3.0"
   },
   "husky": {
     "hooks": {
