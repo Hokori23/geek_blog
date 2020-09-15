@@ -1,5 +1,10 @@
 import UserAction from './UserAction';
-export { UserAction };
+import PostAction from './PostAction';
+import PostTagsAction from './PostTagsAction';
+
+export { UserAction, PostAction, PostTagsAction };
 export default {
-  User: UserAction
+  User: UserAction,
+  Post: PostAction,
+  PostTags: PostTagsAction
 };
