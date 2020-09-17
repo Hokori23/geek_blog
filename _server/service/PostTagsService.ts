@@ -34,14 +34,14 @@ const Create = async (postTag: PostTags) => {
 // };
 
 /**
- * 通过标签名模糊查找帖子（分页）
- * @param { string } name
+ * 通过标签名查找帖子（分页）
+ * @param { string } tag
  * @param { number } page
  * @param { number } capacity
  */
-const Retrieve__ByTagName = async (name: string, page: number, capacity: number) => {
+const Retrieve__ByTagName = async (tag: string, page: number, capacity: number) => {
   try {
-    const res: Array<any> = await PostTagsAction.Retrieve__ByTagName(name, page, capacity);
+    const res: Array<any> = await PostTagsAction.Retrieve__ByTagName(tag, page, capacity);
     if (!res.length) {
       return new Restful(1, '帖子标签不存在');
     }
