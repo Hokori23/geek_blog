@@ -1,123 +1,81 @@
-import { isUndef } from '@public';
+import { isDef } from '@public';
+import { DataTypes, Model } from 'sequelize';
+import DB from '@database';
 
-interface User {
-  id?: number;
-  account?: string;
-  username?: string;
-  email?: string;
-  password?: string;
-  avatar_url?: string;
-  bio?: string;
-  power?: number;
-  social_buttons?: string;
-  last_activated_at?: string;
-}
-
-class User implements User {
-  id?: number;
-  account?: string;
-  username?: string;
-  email?: string;
-  password?: string;
-  avatar_url?: string;
-  bio?: string;
-  power?: number;
-  social_buttons?: string;
-  last_activated_at?: string;
-  constructor(
-    id?: number,
-    account?: string,
-    username?: string,
-    email?: string,
-    password?: string,
-    avatar_url?: string,
-    bio?: string,
-    power?: number,
-    social_buttons?: string,
-    last_activated_at?: string
-  ) {
-    this.id = id;
-    this.account = account;
-    this.username = username;
-    this.email = email;
-    this.password = password;
-    this.avatar_url = avatar_url;
-    this.bio = bio;
-    this.power = power;
-    this.social_buttons = social_buttons;
-    this.last_activated_at = last_activated_at;
-  }
+class User extends Model {
   toArray(): Array<any> {
-    const {
-      id,
-      account,
-      username,
-      email,
-      password,
-      avatar_url,
-      bio,
-      power,
-      social_buttons,
-      last_activated_at
-    } = this;
-    return [
-      id,
-      account,
-      username,
-      email,
-      password,
-      avatar_url,
-      bio,
-      power,
-      social_buttons,
-      last_activated_at
-    ];
+    const res = [] as Array<any>;
+    Object.keys(this).forEach((key) => {
+      res.push(this[key]);
+    });
+    return res;
   }
   // 检查参数完整性
   checkIntegrity(params?: Array<string>): boolean {
-    if (params) {
-      for (let i = 0; i < params.length; i++) {
-        if (isUndef(this[params[i]])) {
-          return false;
-        }
-      }
-      return true;
-    } else {
-      const arr = this.toArray();
-      for (let i = 0; i < arr.length; i++) {
-        if (isUndef(arr[i])) {
-          return false;
-        }
-      }
-      return true;
-    }
-  }
-  static clone(obj: User): User {
-    const {
-      id,
-      account,
-      username,
-      email,
-      password,
-      avatar_url,
-      bio,
-      power,
-      social_buttons,
-      last_activated_at
-    } = obj;
-    return new User(
-      id,
-      account,
-      username,
-      email,
-      password,
-      avatar_url,
-      bio,
-      power,
-      social_buttons,
-      last_activated_at
-    );
+    return params
+      ? params.every((v) => {
+          return isDef(v);
+        })
+      : this.toArray().every((v) => {
+          return isDef(v);
+        });
   }
 }
+
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
+      comment: '自增字段（主键）'
+    },
+    account: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      comment: '用户账号'
+    },
+    username: {
+      type: DataTypes.STRING(20),
+      unique: true,
+      allowNull: false,
+      comment: '用户名'
+    },
+    email: {
+      type: DataTypes.STRING(150),
+      allowNull: false,
+      comment: 'email'
+    },
+    password: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      comment: '密码'
+    },
+    avatar_url: {
+      type: DataTypes.STRING(100),
+      comment: '头像图片路径'
+    },
+    bio: {
+      type: DataTypes.TEXT,
+      comment: '自我介绍'
+    },
+    power: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+      allowNull: false,
+      comment: '0：超级管理员；1：管理员；2：其他'
+    },
+    social_buttons: {
+      type: DataTypes.TEXT,
+      comment: '社交链接'
+    },
+  },
+  {
+    sequelize: DB,
+    modelName: 'User',
+    tableName: 'user'
+  }
+);
 
 export default User;
