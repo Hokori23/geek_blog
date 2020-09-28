@@ -1,18 +1,17 @@
 const { dataBaseConfig } = require('../../geekblog.config');
-const MYSQL2 = require('mysql2');
+import { Sequelize } from 'sequelize';
 
-const DB = async () => {
+const { database, user, password, options} = dataBaseConfig;
+
+const DB = new Sequelize(database, user, password, options);
+
+(async () => {
   try {
-    const connection = await MYSQL2.createConnection(dataBaseConfig);
-    await connection.connect((err: Error) => {
-      if (err) {
-        Promise.reject(err);
-      }
-    });
-    return connection;
-  } catch (e) {
-    console.log('连接数据库失败');
-    Promise.reject(e);
+    await DB.authenticate();
+    console.log('Connection has been established successfully.');
+  } catch (error) {
+    throw new Error(`Unable to connect to the database: ${error}`);
   }
-};
+})();
+
 export default DB;
