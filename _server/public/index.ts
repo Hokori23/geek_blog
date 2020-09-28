@@ -46,37 +46,26 @@ const timeFormat = (timeStamp?: number | string): string => {
 
 /**
  * @param { Array<Object> } objArr
- * @param { boolean } flag
- * @description 当flag == true时，后面源对象可枚举属性isUndef时，不会覆盖前方对象属性
  */
-const assign = (objArr: Array<Object>, flag?: boolean): any => {
-  if (isUndef(objArr)) {
-    throw new ReferenceError('参数错误: [ objArr: Array, flag?: Boolean ]');
+const mixin = (attrs: Array<Object>): any => {
+  if (isUndef(attrs)) {
+    throw new ReferenceError('参数错误: [ attrs: Array, flag?: Boolean ]');
   }
   // 检查传参类型
-  if (!(objArr instanceof Array)) {
-    throw new TypeError('参数类型错误：[ objArr: Array<Object> ]');
-  }
-
-  if (!flag) {
-    return Object.assign({}, ...objArr);
-  }
-
-  // 检查传参类型
-  for (let i = objArr.length - 1; i > 0; i--) {
+  for (let i = attrs.length - 1; i > 0; i--) {
     if (
-      typeof objArr[i] !== 'object' ||
-      objArr[i].toString() !== '[object Object]'
+      typeof attrs[i] !== 'object' ||
+      attrs[i].toString() !== '[object Object]'
     ) {
-      throw new TypeError('参数类型错误: [ objArr: Array<Object> ]');
+      throw new TypeError('参数类型错误: [ attrs: Array<Object> ]');
     }
-    Object.keys(objArr[i]).forEach((v: string): void => {
-      if (isDef(objArr[i][v])) {
-        objArr[i - 1][v] = objArr[i][v];
+    Object.keys(attrs[i]).forEach((v: string): void => {
+      if (isDef(attrs[i][v])) {
+        attrs[i - 1][v] = attrs[i][v];
       }
     });
   }
-  return objArr[0];
+  return attrs[0];
 };
 
 /**
@@ -144,7 +133,7 @@ export {
   isUndef,
   emailErrorLocation,
   timeFormat,
-  assign,
+  mixin,
   crypto,
   Restful
 };
@@ -155,7 +144,7 @@ export default {
   isUndef,
   emailErrorLocation,
   timeFormat,
-  assign,
+  mixin,
   crypto,
   Restful
 };
