@@ -58,8 +58,8 @@ const SpawnJWT = (URL: string, account: string) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (URL !== whiteList[0]) {
-        const userQuery = await UserAction.Retrieve__Safely(account);
-        if (!userQuery.length) {
+        const existedUser = await UserAction.Retrieve__Safely(account);
+        if (!existedUser) {
           resolve(false);
           return;
         }
@@ -99,13 +99,13 @@ const CheckAndRefreshJWT = async (decodedJWT, res) => {
   }
   return new Promise(async (resolve, reject) => {
     // JWT 接收者错误
-    const userQuery = await UserAction.Retrieve__Safely(aud);
-    if (!userQuery.length) {
+    const existedUser = await UserAction.Retrieve__Safely(aud);
+    if (!existedUser) {
       reject(false);
       return;
     }
     // res临时变量：用户权限
-    res.locals.userPower = userQuery[0].power;
+    res.locals.userPower = existedUser.power;
 
     // 更新JWT有效时间
     decodedJWT.exp = Date.now() + tokenExpiresTime;
