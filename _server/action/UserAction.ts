@@ -5,7 +5,7 @@ import { User } from '@vo';
  * @param { User } user
  */
 const Create = (user: User): Promise<User> => {
-  return User.create(user);
+  return user.save();
 };
 
 /**
@@ -38,7 +38,7 @@ const Retrieve__Safely = (account: string): Promise<User | null> => {
 /**
  * 遍历用户（不含密码）
  */
-const Retrieve__All__Safely = (): Promise<Array<User>> => {
+const Retrieve__All__Safely = (): Promise<Array<User | null>> => {
   return User.findAll({
     attributes: {
       exclude: ['password']
@@ -59,7 +59,7 @@ const Update = (oldUser: User, newUser: User): Promise<any> => {
  * 删除用户账号
  * @param { string } account
  */
-const Delete = (account: string): Promise<any> => {
+const Delete = (account: string): Promise<number> => {
   return User.destroy({
     where: {
       account
