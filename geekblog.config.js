@@ -52,7 +52,7 @@ const config = {
       'http://localhost/',
     // 完整URL为： nginx配置下的转发路径 `${location}`
     // baseURL: "/geekblog" || ""
-    baseURL: '/'
+    baseURL: ''
   },
 
   /**
