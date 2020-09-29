@@ -30,7 +30,7 @@ ROUTER.get('/retrieve', async (req, res, next) => {
  * @param { User } user
  */
 ROUTER.post('/register', async (req, res, next) => {
-  const user: User = User.build(req.body);
+  const user = User.build(req.body);
   if (
     !User.checkIntegrity(['account', 'username', 'email', 'password', 'power'])
   ) {
@@ -53,7 +53,7 @@ ROUTER.post('/register', async (req, res, next) => {
  * @param { string } password
  */
 ROUTER.post('/login', async (req, res, next) => {
-  const user: User = User.build(req.body);
+  const user = User.build(req.body);
   if (!User.checkIntegrity(['account', 'password'])) {
     res.status(200).json(new Restful(1, '参数错误'));
     return next();
@@ -75,13 +75,15 @@ ROUTER.post('/login', async (req, res, next) => {
  * @param { string } ?old_password
  */
 ROUTER.post('/edit', async (req, res, next) => {
-  const user: User = User.build(req.body);
+  const user: any = User.build(req.body).toJSON();
   const old_password = req.body.old_password;
   if (!User.checkIntegrity(['account'])) {
     res.status(200).json(new Restful(1, '参数错误'));
     return next();
   }
-  if ((old_password && !user.password) || (!old_password && user.password)) {
+
+  // 同或
+  if (!(Number(!!old_password) ^ Number(!!user.password))) {
     res.status(200).json(new Restful(1, '参数错误'));
     return next();
   }
