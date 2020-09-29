@@ -2,8 +2,31 @@ import { isDef } from '@public';
 import { DataTypes, Model } from 'sequelize';
 import DB from '@database';
 
-class User extends Model {
-  toArray(): Array<any> {
+interface UserAttributes {
+  id: number | null;
+  account: string;
+  username: string;
+  email: string;
+  password: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  power: number;
+  social_buttons: string | null;
+}
+
+class User extends Model implements UserAttributes {
+  public id!: number | null;
+  public account!: string;
+  public username!: string;
+  public email!: string;
+  public password!: string | null;
+  public avatar_url!: string | null;
+  public bio!: string | null;
+  public power!: number;
+  public social_buttons!: string | null;
+  
+  // 属性转数组
+  static toArray(): Array<any> {
     const res = [] as Array<any>;
     Object.keys(this).forEach((key) => {
       res.push(this[key]);
@@ -11,7 +34,7 @@ class User extends Model {
     return res;
   }
   // 检查参数完整性
-  checkIntegrity(params?: Array<string>): boolean {
+  static checkIntegrity(params?: Array<string>): boolean {
     return params
       ? params.every((v) => {
           return isDef(v);
@@ -28,7 +51,6 @@ User.init(
       type: DataTypes.INTEGER.UNSIGNED,
       primaryKey: true,
       autoIncrement: true,
-      allowNull: false,
       comment: '自增字段（主键）'
     },
     account: {
@@ -57,23 +79,22 @@ User.init(
       comment: '头像图片路径'
     },
     bio: {
-      type: DataTypes.TEXT,
+      type: DataTypes.TEXT(),
       comment: '自我介绍'
     },
     power: {
       type: DataTypes.TINYINT,
-      defaultValue: 0,
+      defaultValue: 2,
       allowNull: false,
       comment: '0：超级管理员；1：管理员；2：其他'
     },
     social_buttons: {
-      type: DataTypes.TEXT,
+      type: DataTypes.TEXT(),
       comment: '社交链接'
-    },
+    }
   },
   {
     sequelize: DB,
-    modelName: 'User',
     tableName: 'user'
   }
 );
