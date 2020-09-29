@@ -12,6 +12,8 @@ interface UserAttributes {
   bio: string | null;
   power: number;
   social_buttons: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 class User extends Model implements UserAttributes {
@@ -24,6 +26,8 @@ class User extends Model implements UserAttributes {
   public bio!: string | null;
   public power!: number;
   public social_buttons!: string | null;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
   
   // 属性转数组
   static toArray(): Array<any> {

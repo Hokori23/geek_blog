@@ -14,7 +14,8 @@ interface PostAttributes {
   is_sticky: boolean;
   type: number;
   cover_url: string | null;
-  tag: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 class Post extends Model implements PostAttributes {
@@ -29,7 +30,8 @@ class Post extends Model implements PostAttributes {
   public is_sticky!: boolean;
   public type!: number;
   public cover_url!: string | null;
-  public tag!: string | null;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 
   // 属性转数组
   static toArray(): Array<any> {
@@ -101,15 +103,11 @@ Post.init(
     type: {
       type: DataTypes.TINYINT,
       defaultValue: 0,
-      comment: '0：文章；1：说说'
+      comment: '文章类别参考: { 0: 文章, 1: LandScape文章, 2: 说说 }'
     },
     cover_url: {
       type: DataTypes.STRING(100),
       comment: '封面图片文件路径'
-    },
-    tag: {
-      type: DataTypes.STRING(100),
-      comment: '分类名'
     }
   },
   {
