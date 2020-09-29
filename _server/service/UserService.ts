@@ -1,15 +1,15 @@
 import { UserAction as Action } from '@action';
 import { User } from '@vo';
-import { Restful, crypto, timeFormat } from '@public';
+import { Restful, crypto } from '@public';
 
 /**
  * 初始化超级管理员
  * @param { User } user
  */
-const Create__SuperAdmin = async (user: User) => {
+const Create__SuperAdmin = async (user: User): Promise<Restful> => {
   try {
-    let res: Array<any> = await Action.Retrieve__All__Safely();
-    if (res.length) {
+    const existedUsers = await Action.Retrieve__All__Safely();
+    if (existedUsers.length) {
       return new Restful(
         1,
         '已有其它用户存在，不可创建新的超级管理员账号，请登录数据库检查或重新创建数据库'
@@ -17,26 +17,19 @@ const Create__SuperAdmin = async (user: User) => {
     }
 
     // 加密密码
-    user.password = crypto(<string>user.password);
+    user.password = crypto(user.password);
 
     /**
      * 1. 权限0: 超级管理员
-     * 2. 去除ID
-     * 3. 添加last_activated_at字段
+     * 2. 去除ID（自增字段）
      */
     user.power = 0;
-    user.id = undefined;
-    user.last_activated_at = timeFormat();
+    user.id = null;
 
-    res = await Action.Create(user);
-    if (res.length) {
-      return new Restful(2, '账号已存在');
-    }
-    // 脱敏
-    delete res[0].password;
-    return new Restful(0, '添加超级管理员成功', res[0]);
+    user = await Action.Create(user);
+
+    return new Restful(0, '添加超级管理员成功', user.toJSON());
   } catch (e) {
-    console.log(e.stack);
     throw new Error(e.message);
   }
 };
@@ -45,10 +38,10 @@ const Create__SuperAdmin = async (user: User) => {
  * 添加管理员
  * @param { User } user
  */
-const Create__Admin = async (user: User) => {
+const Create__Admin = async (user: User): Promise<Restful> => {
   try {
-    let res: Array<any> = await Action.Retrieve(<string>user.account);
-    if (res.length) {
+    const existedUser = await Action.Retrieve(<string>user.account);
+    if (existedUser) {
       return new Restful(1, '账号已存在');
     }
     // 加密密码
@@ -56,20 +49,16 @@ const Create__Admin = async (user: User) => {
 
     /**
      * 1. 权限1: 管理员
-     * 2. 去除ID
-     * 3. 添加last_activated_at字段
+     * 2. 去除ID（自增字段）
      */
     user.power = 1;
-    user.id = undefined;
-    user.last_activated_at = timeFormat();
+    user.id = null;
 
-    res = await Action.Create(user);
-    // 脱敏
-    delete user.password;
-    return new Restful(0, '添加管理员成功', user);
+    user = await Action.Create(user);
+
+    return new Restful(0, '添加管理员成功', user.toJSON());
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `添加管理员失败, ${e.message}`);
   }
 };
 
@@ -77,10 +66,10 @@ const Create__Admin = async (user: User) => {
  * 添加普通账号
  * @param { User } user
  */
-const Create = async (user: User) => {
+const Register = async (user: User): Promise<Restful> => {
   try {
-    let res: Array<any> = await Action.Retrieve(<string>user.account);
-    if (res.length) {
+    const existedUser = await Action.Retrieve(<string>user.account);
+    if (existedUser) {
       return new Restful(1, '账号已存在');
     }
     if (<number>user.power <= 1) {
@@ -89,20 +78,14 @@ const Create = async (user: User) => {
     // 加密密码
     user.password = crypto(<string>user.password);
 
-    /**
-     * 1. 去除ID
-     * 2. 添加last_activated_at字段
-     */
-    user.last_activated_at = timeFormat();
-    user.id = undefined;
+    // 去除ID（自增字段）
+    user.id = null;
 
-    res = await Action.Create(user);
-    // 脱敏
-    delete user.password;
-    return new Restful(0, '注册成功', user);
+    user = await Action.Create(user);
+
+    return new Restful(0, '注册成功', user.toJSON());
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `注册失败, ${e.message}`);
   }
 };
 
@@ -110,23 +93,22 @@ const Create = async (user: User) => {
  * 登录
  * @param { User } user
  */
-const Login = async (user: User) => {
+const Login = async (user: User): Promise<Restful> => {
   const { account, password } = user;
   try {
-    const res: Array<any> = await Action.Retrieve(<string>account);
-    if (!res.length) {
+    const existedUser = await Action.Retrieve(<string>account);
+    if (!existedUser) {
       return new Restful(1, '账号不存在');
     }
     // 匹配密码
-    if (crypto(<string>password) === res[0].password) {
+    if (crypto(<string>password) === user.password) {
       // 脱敏
-      delete res[0].password;
-      return new Restful(0, '登陆成功', res[0]);
+      user.password = null;
+      return new Restful(0, '登陆成功', user.toJSON());
     }
     return new Restful(2, '账号或密码错误');
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `登陆失败, ${e.message}`);
   }
 };
 
@@ -134,73 +116,71 @@ const Login = async (user: User) => {
  * 查询单个用户
  * @param { string } account
  */
-const Retrieve = async (account: string) => {
+const Retrieve = async (account: string): Promise<Restful> => {
   try {
-    const res: Array<any> = await Action.Retrieve__Safely(account);
-    if (!res.length) {
+    const user = await Action.Retrieve__Safely(account);
+    if (!user) {
       return new Restful(1, '账号不存在');
     }
-    return new Restful(0, '查询成功', res[0]);
+    return new Restful(0, '查询成功', user.toJSON());
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `查询失败, ${e.message}`);
   }
 };
 
 /**
  * 遍历用户
  */
-const Retrieve__All = async () => {
+const Retrieve__All = async (): Promise<Restful> => {
   try {
-    const res: Array<any> = await Action.Retrieve__All__Safely();
-    return new Restful(0, '查询成功', res);
+    const users = await Action.Retrieve__All__Safely();
+    return new Restful(0, '查询成功', users);
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `查询失败, ${e.message}`);
   }
 };
 
 /**
  * 编辑用户
- * @param { User }user
+ * @param { User } user
  */
-const Edit = async (user: User) => {
+const Edit = async (user: User): Promise<Restful> => {
   try {
-    let res: Array<any> = await Action.Retrieve(<string>user.account);
-    if (!res.length) {
+    const existedUser = await Action.Retrieve(<string>user.account);
+    if (existedUser === null || existedUser === undefined) {
       return new Restful(1, '账号不存在');
     }
-    const newUser: User = await Action.Update(res[0], user);
+    const newUser = await Action.Update(existedUser, user);
+
     // 脱敏
-    delete newUser.password;
-    return new Restful(0, '编辑成功', newUser);
+    newUser.password = null;
+    return new Restful(0, '编辑成功', newUser.toJSON());
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `编辑失败, ${e.message}`);
   }
 };
 
 /**
  * 编辑用户（包含修改密码）
- * @param { User }user
+ * @param { User } user
  */
 const EditIncludePassword = async (user: User, old_password) => {
   try {
-    let res: Array<any> = await Action.Retrieve(<string>user.account);
-    if (!res.length) {
+    const existedUser = await Action.Retrieve(<string>user.account);
+    if (!existedUser) {
       return new Restful(1, '账号不存在');
     }
-    if (crypto(<string>old_password) === res[0].password) {
+    if (crypto(<string>old_password) === existedUser.password) {
       user.password = crypto(<string>user.password);
-      let newUser: User = await Action.Update(res[0], user);
+      const newUser: User = await Action.Update(existedUser, user);
+
       // 脱敏
-      delete newUser.password;
-      return new Restful(0, '编辑成功', newUser);
+      newUser.password = null;
+      return new Restful(0, '编辑成功', newUser.toJSON());
     }
     return new Restful(2, '密码错误');
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `编辑失败, ${e.message}`);
   }
 };
 
@@ -216,34 +196,34 @@ const Delete = async (
   password: string
 ) => {
   try {
-    const operateUser: Array<any> = await Action.Retrieve(operateAccount);
-    const deleteUser: Array<any> = await Action.Retrieve(account);
-    if (!deleteUser.length) {
-      return new Restful(1, '账号不存在');
+    const operateUser = await Action.Retrieve(operateAccount);
+    const deleteUser = await Action.Retrieve(account);
+    if (!operateUser) {
+      return new Restful(2, '管理员账号不存在');
+    }
+    if (!deleteUser) {
+      return new Restful(3, '被操作账号不存在');
     }
     if (operateAccount !== account) {
-      if (
-        operateUser[0].power > 1 ||
-        operateUser[0].power >= deleteUser[0].power
-      ) {
-        return new Restful(3, '你无权删除他人的账号！');
+      if (operateUser.power > 1 || operateUser.power >= deleteUser.power) {
+        return new Restful(1, '你无权删除他人的账号！');
       }
     }
-    if (crypto(password) === operateUser[0].password) {
+    if (crypto(password) === operateUser.password) {
       // 匹配密码
+      await Action.Delete(account);
       return new Restful(0, '注销成功');
     }
     return new Restful(2, '密码错误');
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(0, '注销失败');
   }
 };
 
 export default {
   Create__SuperAdmin,
   Create__Admin,
-  Create,
+  Register,
   Login,
   Retrieve,
   Retrieve__All,
