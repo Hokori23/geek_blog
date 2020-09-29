@@ -5,10 +5,16 @@ import { isUndef, QUERY_METHODS, BODY_METHODS, Restful, crypto } from '@public';
 const { jwtConfig, baseURL } = serverConfig;
 const JWT = require('jwt-simple');
 
+/**
+ * @description 该中间件为res添加的临时变量为
+ * @param { number } userPower
+ * @param { string } userAccount
+ */
+
 // 秘钥
 if (isUndef(jwtConfig.key)) {
   throw new ReferenceError(
-    'geekblog.config.js缺少字段serverConfig --> jwtConfig --> key'
+    'geekblog.config.js缺少字段: serverConfig.jwtConfig.key'
   );
 }
 const jwtKey = crypto(jwtConfig.key);
@@ -19,7 +25,7 @@ const tokenExpiresTime =
 
 /**
  * 路由白名单
- * @description 白名单内的请求字段都应带上用户账号account，请勿修改第一个路径
+ * @description 白名单内的请求字段都应带上用户账号account，请勿修改第一个路径（注册接口）
  */
 const whiteList = [`${baseURL}/user/register`, `${baseURL}/user/login`];
 
@@ -27,7 +33,12 @@ const whiteList = [`${baseURL}/user/register`, `${baseURL}/user/login`];
  * 公开接口
  * @description 公开接口任何人都可以调用
  */
-const publicList = [`${baseURL}/user/retrieve`];
+const publicList = [
+  `${baseURL}/user/retrieve`,
+  `${baseURL}/post/retrieve-id`,
+  `${baseURL}/post/retrieve`,
+  `${baseURL}/post/retrieve-fuzzy`
+];
 
 /**
  * 生成JWT token
@@ -57,6 +68,7 @@ const Decode = (encodedJWT) => {
 const SpawnJWT = (URL: string, account: string) => {
   return new Promise(async (resolve, reject) => {
     try {
+      // 对白名单内的注册接口进行特殊判断
       if (URL !== whiteList[0]) {
         const existedUser = await UserAction.Retrieve__Safely(account);
         if (!existedUser) {
@@ -66,8 +78,9 @@ const SpawnJWT = (URL: string, account: string) => {
       }
       // 生成并加密JWT
       const newJWT = Encode({
-        iss: `${blogConfig.blogName || 'blogName'} - ${blogConfig.bloggerName ||
-          'bloggerName'}`, // 签发者
+        iss: `${blogConfig.blogName || 'blogName'} - ${
+          blogConfig.bloggerName || 'bloggerName'
+        }`, // 签发者
         aud: account, // 接收者
         exp: Date.now() + tokenExpiresTime // 过期时间
       });
@@ -92,8 +105,9 @@ const CheckAndRefreshJWT = async (decodedJWT, res) => {
   // JWT 签发者错误
   if (
     iss !==
-    `${blogConfig.blogName || 'blogName'} - ${blogConfig.bloggerName ||
-      'bloggerName'}`
+    `${blogConfig.blogName || 'blogName'} - ${
+      blogConfig.bloggerName || 'bloggerName'
+    }`
   ) {
     return false;
   }
