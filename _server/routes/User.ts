@@ -7,6 +7,7 @@ const ROUTER = EXPRESS.Router();
 /**
  * 遍历/单个查询
  * @path /retrieve
+ * @param { string } ?account
  */
 ROUTER.get('/retrieve', async (req, res, next) => {
   const { account } = req.query;
@@ -26,17 +27,18 @@ ROUTER.get('/retrieve', async (req, res, next) => {
 /**
  * 注册
  * @path /register
+ * @param { User } user
  */
 ROUTER.post('/register', async (req, res, next) => {
-  const user: User = User.clone(req.body);
+  const user: User = User.build(req.body);
   if (
-    !user.checkIntegrity(['account', 'username', 'email', 'password', 'power'])
+    !User.checkIntegrity(['account', 'username', 'email', 'password', 'power'])
   ) {
     res.status(200).json(new Restful(1, '参数错误'));
     return next();
   }
   try {
-    res.status(200).json(await Service.Create(user));
+    res.status(200).json(await Service.Register(user));
   } catch (e) {
     // 进行邮件提醒
     res.status(500).end();
@@ -47,10 +49,12 @@ ROUTER.post('/register', async (req, res, next) => {
 /**
  * 登陆
  * @path /login
+ * @param { string } account
+ * @param { string } password
  */
 ROUTER.post('/login', async (req, res, next) => {
-  const user: User = User.clone(req.body);
-  if (!user.checkIntegrity(['account', 'password'])) {
+  const user: User = User.build(req.body);
+  if (!User.checkIntegrity(['account', 'password'])) {
     res.status(200).json(new Restful(1, '参数错误'));
     return next();
   }
@@ -67,11 +71,13 @@ ROUTER.post('/login', async (req, res, next) => {
  * 编辑
  * @path /edit
  * @description 至少需要account，如果更改密码的话，需要加上old_password参数
+ * @param { User } user
+ * @param { string } ?old_password
  */
 ROUTER.post('/edit', async (req, res, next) => {
-  const user: User = User.clone(req.body);
+  const user: User = User.build(req.body);
   const old_password = req.body.old_password;
-  if (!user.checkIntegrity(['account'])) {
+  if (!User.checkIntegrity(['account'])) {
     res.status(200).json(new Restful(1, '参数错误'));
     return next();
   }
@@ -95,11 +101,12 @@ ROUTER.post('/edit', async (req, res, next) => {
   next();
 });
 
-
 /**
  * 注销
  * @path /delete
  * @description 暂时是只有power <= 1的账号才能注销别人的账号，逻辑实现在UserService层
+ * @param { string } account
+ * @param { string } password
  */
 ROUTER.post('/delete', async (req, res, next) => {
   const { account, password } = req.body;
