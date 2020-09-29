@@ -72,7 +72,11 @@ const mixin = (attrs: Array<Object>): any => {
  * 加密函数
  * @param { string } v 加密字段
  */
-const crypto = (v: string) => {
+const crypto = (v: string | null) => {
+  if (v === null) {
+    return v;
+  }
+  
   const { onceCryptLength, cryptCount, digest } = crytpoConfig;
   const md5 = CRYPTO.createHash('md5');
   const vLength = v.length;
