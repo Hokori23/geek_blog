@@ -1,134 +1,120 @@
-import { isUndef, timeFormat } from '@public';
+import { isDef } from '@public';
+import { DataTypes, Model } from 'sequelize';
+import DB from '@database';
 
-interface Post {
-  id: number;
+interface PostAttributes {
+  id: number | null;
+  user_account: string;
+  title: string | null;
   content: string;
-  created_at: string;
   view_count: number;
   comment_count: number;
   is_hidden: boolean;
   is_locked: boolean;
   is_sticky: boolean;
-  type: boolean;
-  title?: string;
-  cover_url?: string;
-  last_modified_at?: string;
-  tag?: string;
+  type: number;
+  cover_url: string | null;
+  tag: string | null;
 }
 
-class Post implements Post {
-  constructor(
-    id: number,
-    content: string,
-    created_at: string,
-    view_count: number,
-    comment_count: number,
-    is_hidden: boolean,
-    is_locked: boolean,
-    is_sticky: boolean,
-    type: boolean,
-    title?: string,
-    cover_url?: string,
-    last_modified_at?: string,
-    tag?: string
-  ) {
-    this.id = id || 1;
-    this.title = title;
-    this.content = content;
-    this.cover_url = cover_url;
-    this.created_at = created_at;
-    this.last_modified_at = last_modified_at || timeFormat(Date.now()); // 默认现在
-    this.view_count = view_count || 0;
-    this.comment_count = comment_count || 0;
-    this.is_hidden = is_hidden || false;
-    this.is_locked = is_locked || false;
-    this.is_sticky = is_sticky || false;
-    this.tag = tag || '';
-    this.type = type || false;
-  }
-  toArray(): Array<any> {
-    const {
-      id,
-      content,
-      created_at,
-      view_count,
-      comment_count,
-      is_hidden,
-      is_locked,
-      is_sticky,
-      type,
-      title,
-      cover_url,
-      last_modified_at,
-      tag
-    } = this;
-    return [
-      id,
-      title,
-      content,
-      cover_url,
-      created_at,
-      last_modified_at,
-      view_count,
-      comment_count,
-      is_hidden,
-      is_locked,
-      is_sticky,
-      tag,
-      type
-    ];
+class Post extends Model implements PostAttributes {
+  public id!: number | null;
+  public user_account!: string;
+  public title!: string | null;
+  public content!: string;
+  public view_count!: number;
+  public comment_count!: number;
+  public is_hidden!: boolean;
+  public is_locked!: boolean;
+  public is_sticky!: boolean;
+  public type!: number;
+  public cover_url!: string | null;
+  public tag!: string | null;
+
+  // 属性转数组
+  static toArray(): Array<any> {
+    const res = [] as Array<any>;
+    Object.keys(this).forEach((key) => {
+      res.push(this[key]);
+    });
+    return res;
   }
   // 检查参数完整性
-  checkIntegrity(params?: Array<string>): boolean {
-    if (params) {
-      for (let i = 0; i < params.length; i++) {
-        if (isUndef(this[params[i]])) {
-          return false;
-        }
-      }
-      return true;
-    } else {
-      const arr = this.toArray();
-      for (let i = 0; i < arr.length; i++) {
-        if (isUndef(arr[i])) {
-          return false;
-        }
-      }
-      return true;
-    }
-  }
-  static clone(obj: Post): Post {
-    const {
-      id,
-      content,
-      created_at,
-      view_count,
-      comment_count,
-      is_hidden,
-      is_locked,
-      is_sticky,
-      type,
-      title,
-      cover_url,
-      last_modified_at,
-      tag
-    } = obj;
-    return new Post(
-      id,
-      content,
-      created_at,
-      view_count,
-      comment_count,
-      is_hidden,
-      is_locked,
-      is_sticky,
-      type,
-      title,
-      cover_url,
-      last_modified_at,
-      tag
-    );
+  static checkIntegrity(params?: Array<string>): boolean {
+    return params
+      ? params.every((v) => {
+          return isDef(v);
+        })
+      : this.toArray().every((v) => {
+          return isDef(v);
+        });
   }
 }
 
+Post.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      primaryKey: true,
+      autoIncrement: true,
+      comment: '自增字段（主键）'
+    },
+    user_account: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      comment: '用户账号'
+    },
+    title: {
+      type: DataTypes.STRING(50),
+      comment: '帖子标题'
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      comment: '帖子内容'
+    },
+    view_count: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      defaultValue: 0,
+      comment: '访问数'
+    },
+    comment_count: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      defaultValue: 0,
+      comment: '评论数'
+    },
+    is_hidden: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      comment: '是否隐藏'
+    },
+    is_locked: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      comment: '可否评论'
+    },
+    is_sticky: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+      comment: '是否置顶or置顶优先级'
+    },
+    type: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+      comment: '0：文章；1：说说'
+    },
+    cover_url: {
+      type: DataTypes.STRING(100),
+      comment: '封面图片文件路径'
+    },
+    tag: {
+      type: DataTypes.STRING(100),
+      comment: '分类名'
+    }
+  },
+  {
+    sequelize: DB,
+    tableName: 'post'
+  }
+);
 export default Post;
