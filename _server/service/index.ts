@@ -1,10 +1,10 @@
 import UserService from './UserService';
 import PostService from './PostService';
-import PostTagsService from './PostTagsService';
+import PostTagService from './PostTagService';
 
-export { UserService, PostService, PostTagsService };
+export { UserService, PostService, PostTagService };
 export default {
   User: UserService,
   Post: PostService,
-  PostTags: PostTagsService
+  PostTag: PostTagService
 };
