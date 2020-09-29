@@ -51,7 +51,7 @@ const Retrieve__All__Safely = (): Promise<Array<User | null>> => {
  * @param { User } oldUser
  * @param { User } newUser
  */
-const Update = (oldUser: User, newUser: User): Promise<any> => {
+const Update = (oldUser: User, newUser: User): Promise<User> => {
   return Object.assign(oldUser, newUser).save();
 };
 
