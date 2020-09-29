@@ -1,18 +1,27 @@
 import { PostAction } from '@action';
 import { Post } from '@vo';
-import { Restful } from '@public';
+import { Restful, isUndef } from '@public';
 
 /**
  * 发布帖子
  * @param { Post } post
+ * @param { number } userPower
+ * @param { string } userAccount
  */
-const Create = async (post: Post) => {
+const Create = async (
+  post: Post,
+  userPower: number,
+  userAccount: string
+): Promise<Restful> => {
   try {
-    await PostAction.Create(post);
-    return new Restful(0, '创建帖子成功');
+    if (isUndef(userPower) || userPower > 1) {
+      return new Restful(1, `创建失败, 权限不足`);
+    }
+    post.user_account = userAccount;
+    post = await PostAction.Create(post);
+    return new Restful(0, '创建成功', post.toJSON());
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `创建失败, ${e.message}`);
   }
 };
 
@@ -20,16 +29,15 @@ const Create = async (post: Post) => {
  * 通过ID查找帖子
  * @param { number } id
  */
-const Retrieve__ByID = async (id: number) => {
+const Retrieve__ByID = async (id: number): Promise<Restful> => {
   try {
-    const res: Array<any> = await PostAction.Retrieve__ByID(id);
-    if (!res.length) {
+    const existedPost = await PostAction.Retrieve__ByID(id);
+    if (!existedPost) {
       return new Restful(1, '帖子不存在');
     }
-    return new Restful(0, '查询成功', res[0]);
+    return new Restful(0, '查询成功', existedPost);
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `查询失败, ${e.message}`);
   }
 };
 
@@ -37,64 +45,110 @@ const Retrieve__ByID = async (id: number) => {
  * 分页查询帖子
  * @param { number } page
  * @param { number } capacity
+ * @param { boolean } isASC
  */
-const Retrieve__Page = async (page: number, capacity: number) => {
+const Retrieve__Page = async (
+  page: number,
+  capacity: number,
+  isASC: boolean = false
+): Promise<Restful> => {
   try {
-    const res: Array<any> = await PostAction.Retrieve__Page(page, capacity);
-    return new Restful(0, '查询成功', res[0]);
+    const existedPosts = await PostAction.Retrieve__Page(
+      (page - 1) * capacity,
+      Number(capacity),
+      isASC
+    );
+    return new Restful(
+      0,
+      '查询成功',
+      existedPosts.map((post) => {
+        return post.toJSON();
+      })
+    );
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `查询失败, ${e.message}`);
   }
 };
 
 /**
- * 模糊查询帖子
+ * 分页模糊查询帖子
+ * @param { number } page
+ * @param { number } capacity
  * @param { string } content
+ * @param { boolean } isASC
  */
-const Retrieve__Fuzzy = async (content: string) => {
+const Retrieve__Fuzzy = async (
+  page: number,
+  capacity: number,
+  content: string,
+  isASC: boolean = false
+): Promise<Restful> => {
   try {
-    const res: Array<any> = await PostAction.Retrieve__Fuzzy(content);
-    return new Restful(0, '查询成功', res);
+    const existedPosts = await PostAction.Retrieve__Fuzzy(
+      (page - 1) * capacity,
+      Number(capacity),
+      content,
+      isASC
+    );
+    return new Restful(
+      0,
+      '查询成功',
+      existedPosts.map((post) => {
+        return post.toJSON();
+      })
+    );
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `查询失败, ${e.message}`);
   }
 };
 
 /**
  * 编辑帖子
  * @param { Post } post
+ * @param { number } userPower
+ * @param { string } userAccount
  */
-const Edit = async (post: Post) => {
+const Edit = async (post: Post, userPower: number, userAccount: string) => {
   try {
-    const res: Array<any> = await PostAction.Retrieve__ByID(post.id);
-    if (!res.length) {
-      return new Restful(1, '帖子不存在');
+    if (isUndef(userPower) || userPower > 1) {
+      return new Restful(1, `编辑失败, 权限不足`);
     }
-    const newPost: Post = await PostAction.Update(res[0], post);
-    return new Restful(0, '编辑成功', newPost);
+    const existedPost = await PostAction.Retrieve__ByID(<number>post.id);
+    if (!existedPost) {
+      return new Restful(2, '帖子不存在');
+    }
+
+    // 混合属性
+    post.user_account = userAccount;
+    const newPost = await PostAction.Update(existedPost, post);
+    return new Restful(0, '编辑成功', newPost.toJSON());
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `编辑失败, ${e.message}`);
   }
 };
 
 /**
  * 删除帖子
  * @param { number } id
+ * @param { number } userPower
  */
-const Delete = async (id: number) => {
+const Delete = async (id: number, userPower: number) => {
   try {
-    const res: Array<any> = await PostAction.Retrieve__ByID(id);
-    if (!res.length) {
+    if (isUndef(userPower) || userPower > 1) {
+      return new Restful(2, `删除失败, 权限不足`);
+    }
+    const existedPost = await PostAction.Retrieve__ByID(id);
+    if (!existedPost) {
       return new Restful(1, '帖子不存在');
     }
-    await PostAction.Delete(id);
-    return new Restful(0, '删除成功');
+    const deleteRow = await PostAction.Delete(id);
+    if (deleteRow > 0) {
+      return new Restful(0, '删除成功');
+    } else {
+      return new Restful(3, '删除失败');
+    }
   } catch (e) {
-    console.log(e.stack);
-    throw new Error(e.message);
+    return new Restful(99, `删除失败, ${e.message}`);
   }
 };
 
