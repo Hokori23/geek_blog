@@ -60,7 +60,7 @@ PostTag.init(
     },
     name: {
       type: DataTypes.STRING(50),
-      unique: true,
+      unique: 'name',
       allowNull: false,
       comment: '标签名'
     },

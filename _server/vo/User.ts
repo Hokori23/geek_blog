@@ -28,7 +28,7 @@ class User extends Model implements UserAttributes {
   public social_buttons!: string | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-  
+
   // 属性转数组
   static toArray(): Array<any> {
     const res = [] as Array<any>;
@@ -64,7 +64,7 @@ User.init(
     },
     username: {
       type: DataTypes.STRING(20),
-      unique: true,
+      unique: 'username',
       allowNull: false,
       comment: '用户名'
     },
