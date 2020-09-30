@@ -56,7 +56,7 @@ ROUTER.post('/create', async (req, res, next) => {
  * @path /edit
  */
 ROUTER.post('/edit', async (req, res, next) => {
-  const postTag: PostTag = PostTag.build(req.body);
+  const postTag: any = PostTag.build(req.body).toJSON();
 
   try {
     if (!PostTag.checkIntegrity(['id', 'name', 'slug'])) {
