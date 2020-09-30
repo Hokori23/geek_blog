@@ -95,7 +95,7 @@ const Delete = async (id: number, userPower: number) => {
     }
     const existedPostTag = await PostTagAction.Retrieve__ByID(id);
     if (!existedPostTag) {
-      return new Restful(1, '帖子不存在');
+      return new Restful(1, '标签不存在');
     }
     const deleteRow = await PostTagAction.Delete(id);
     if (deleteRow > 0) {
