@@ -34,7 +34,7 @@ const Retrieve__ByTagName = async (
   capacity: number
 ): Promise<Restful> => {
   try {
-    const existedPostTag = await PostTagAction.Retrieve__ByTagName(
+    const existedPostTag = await PostTagAction.Retrieve__ByTagNameInPage(
       tag_name,
       (page - 1) * capacity,
       Number(capacity)
@@ -67,7 +67,7 @@ const Edit = async (postTag: PostTag, userPower: number) => {
     if (isUndef(userPower) || userPower > 1) {
       return new Restful(1, `编辑失败, 权限不足`);
     }
-    const existedPostTag: PostTag = await PostTagAction.Retrieve__ByID(
+    const existedPostTag = await PostTagAction.Retrieve__ByID(
       <number>postTag.id
     );
     if (!existedPostTag) {
@@ -93,7 +93,7 @@ const Delete = async (id: number, userPower: number) => {
     if (isUndef(userPower) || userPower > 1) {
       return new Restful(2, `删除失败, 权限不足`);
     }
-    const existedPostTag: PostTag = await PostTagAction.Retrieve__ByID(id);
+    const existedPostTag = await PostTagAction.Retrieve__ByID(id);
     if (!existedPostTag) {
       return new Restful(1, '帖子不存在');
     }
