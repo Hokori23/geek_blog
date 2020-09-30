@@ -28,12 +28,14 @@ ROUTER.get('/retrieve-id', async (req, res, next) => {
  * @path /retrieve
  */
 ROUTER.get('/retrieve', async (req, res, next) => {
-  const { page, capacity } = req.query;
+  const { page, capacity, isASC } = req.query;
   try {
-    if (isUndef(page) && isUndef(capacity) && page < 0 && capacity < 0) {
+    if (isUndef(page) || isUndef(capacity) || page < 0 || capacity < 0) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
-      res.status(200).json(await Service.Retrieve__Page(page, capacity));
+      res
+        .status(200)
+        .json(await Service.Retrieve__Page(page, capacity, Boolean(isASC)));
     }
   } catch (e) {
     // 进行邮件提醒
@@ -43,16 +45,26 @@ ROUTER.get('/retrieve', async (req, res, next) => {
 });
 
 /**
- * 模糊查询
+ * 分页模糊查询
  * @path /retrieve-fuzzy
  */
 ROUTER.get('/retrieve-fuzzy', async (req, res, next) => {
-  const { content } = req.query;
+  const { page, capacity, content, isASC } = req.query;
   try {
-    if (isUndef(content)) {
+    if (
+      isUndef(page) ||
+      isUndef(capacity) ||
+      page < 0 ||
+      capacity < 0 ||
+      isUndef(content)
+    ) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
-      res.status(200).json(await Service.Retrieve__Fuzzy(content));
+      res
+        .status(200)
+        .json(
+          await Service.Retrieve__Fuzzy(page, capacity, content, Boolean(isASC))
+        );
     }
   } catch (e) {
     // 进行邮件提醒
@@ -66,13 +78,19 @@ ROUTER.get('/retrieve-fuzzy', async (req, res, next) => {
  * @path /create
  */
 ROUTER.post('/create', async (req, res, next) => {
-  const post: Post = Post.clone(req.body);
+  const post = Post.build(req.body);
+  const { post_tag_names } = req.body;
+  const { userPower, userAccount } = res.locals;
 
   try {
-    if (!post.checkIntegrity(['id', 'content'])) {
+    if (!Post.checkIntegrity(['content'])) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
-      res.status(200).json(await Service.Create(post));
+      res
+        .status(200)
+        .json(
+          await Service.Create(post, post_tag_names, userPower, userAccount)
+        );
     }
   } catch (e) {
     // 进行邮件提醒
@@ -86,13 +104,14 @@ ROUTER.post('/create', async (req, res, next) => {
  * @path /edit
  */
 ROUTER.post('/edit', async (req, res, next) => {
-  const post: Post = Post.clone(req.body);
+  const post: any = Post.build(req.body).toJSON();
+  const { userPower, userAccount } = res.locals;
 
   try {
-    if (!post.checkIntegrity(['id', 'content'])) {
+    if (!Post.checkIntegrity(['id', 'content'])) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
-      res.status(200).json(await Service.Edit(post));
+      res.status(200).json(await Service.Edit(post, userPower, userAccount));
     }
   } catch (e) {
     // 进行邮件提醒
@@ -111,7 +130,7 @@ ROUTER.post('/delete', async (req, res, next) => {
     if (isUndef(id)) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
-      res.status(200).json(await Service.Delete(id));
+      res.status(200).json(await Service.Delete(id, res.locals.userPower));
     }
   } catch (e) {
     // 进行邮件提醒
