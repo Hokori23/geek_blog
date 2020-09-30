@@ -1,5 +1,15 @@
+import {
+  DataTypes,
+  Model,
+  HasManyGetAssociationsMixin,
+  HasManyAddAssociationMixin,
+  HasManyHasAssociationMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin
+} from 'sequelize';
+
 import { isDef } from '@public';
-import { DataTypes, Model } from 'sequelize';
+import { PostTag, PostComment } from '@vo';
 import DB from '@database';
 
 interface PostAttributes {
@@ -32,6 +42,18 @@ class Post extends Model implements PostAttributes {
   public cover_url!: string | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  public getPostTags!: HasManyGetAssociationsMixin<PostTag>;
+  public addPostTag!: HasManyAddAssociationMixin<PostTag, number>;
+  public hasPostTag!: HasManyHasAssociationMixin<PostTag, number>;
+  public countPostTags!: HasManyCountAssociationsMixin;
+  public createPostTag!: HasManyCreateAssociationMixin<PostTag>;
+
+  public getPostComments!: HasManyGetAssociationsMixin<PostComment>;
+  public addPostComment!: HasManyAddAssociationMixin<PostComment, number>;
+  public hasPostComment!: HasManyHasAssociationMixin<PostComment, number>;
+  public countPostComments!: HasManyCountAssociationsMixin;
+  public createPostComment!: HasManyCreateAssociationMixin<PostComment>;
 
   // 属性转数组
   static toArray(): Array<any> {

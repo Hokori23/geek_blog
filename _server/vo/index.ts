@@ -1,6 +1,28 @@
 import User from './User';
 import Post from './Post';
-import PostTags from './PostTags';
+import PostTag from './PostTag';
+import PostComment from './PostComment';
 
-export { User, Post, PostTags };
-export default { User, Post, PostTags };
+// Post : PostTag = N : M
+Post.belongsToMany(PostTag, {
+  through: 'post__post_tag',
+  targetKey: 'name',
+  sourceKey: 'id'
+});
+PostTag.belongsToMany(Post, {
+  through: 'post__post_tag',
+  targetKey: 'id',
+  sourceKey: 'name'
+});
+
+// Post : PostComment = 1 : N
+Post.hasMany(PostComment, {
+  foreignKey: 'post_id'
+});
+PostComment.belongsTo(Post, {
+  foreignKey: 'post_id',
+  onDelete: 'CASCADE'
+});
+
+export { User, Post, PostTag, PostComment };
+export default { User, Post, PostTag, PostComment };
