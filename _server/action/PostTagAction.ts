@@ -5,7 +5,7 @@ import { Op } from 'sequelize';
  * 添加帖子标签
  * @param { PostTag } postTag
  */
-const Create = (postTag: PostTag): Promise<any> => {
+const Create = (postTag: PostTag): Promise<PostTag> => {
   return postTag.save();
 };
 
@@ -13,10 +13,22 @@ const Create = (postTag: PostTag): Promise<any> => {
  * 通过ID查询单个帖子标签
  * @param { number } id
  */
-const Retrieve__ByID = (id: number): Promise<any> => {
+const Retrieve__ByID = (id: number): Promise<PostTag | null> => {
   return PostTag.findOne({
     where: {
       id
+    }
+  });
+};
+
+/**
+ * 通过Name查询单个帖子标签
+ * @param { string } name
+ */
+const Retrieve__ByTagName = (name: string): Promise<PostTag | null> => {
+  return PostTag.findOne({
+    where: {
+      name
     }
   });
 };
@@ -28,7 +40,7 @@ const Retrieve__ByID = (id: number): Promise<any> => {
  * @param { number } limit
  * @param { boolean } isASC
  */
-const Retrieve__ByTagName = (
+const Retrieve__ByTagNameInPage = (
   name: string,
   offset: number,
   limit: number,
@@ -77,6 +89,7 @@ export default {
   Create,
   Retrieve__ByID,
   Retrieve__ByTagName,
+  Retrieve__ByTagNameInPage,
   Retrieve__All,
   Update,
   Delete
