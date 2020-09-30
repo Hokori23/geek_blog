@@ -1,23 +1,33 @@
-import { Post, PostTag } from '@vo';
-import { Op } from 'sequelize';
+import { Post, PostTag, PostComment } from '@vo';
+
+import { Op, Transaction } from 'sequelize';
 
 /**
  * 添加帖子
  * @param { Post } post
+ * @param { Transaction | undefined } t
  */
-const Create = (post: Post): Promise<Post> => {
-  return post.save();
+const Create = (
+  post: Post,
+  t: Transaction | undefined = undefined
+): Promise<Post> => {
+  return post.save({ transaction: t });
 };
 
 /**
  * 通过ID查询单个帖子
  * @param { number } id
+ * @param { boolean } withComments
  */
-const Retrieve__ByID = (id: number): Promise<Post | null> => {
+const Retrieve__ByID = (
+  id: number,
+  withComments: boolean = true
+): Promise<Post | null> => {
   return Post.findOne({
     where: {
       id
-    }
+    },
+    include: withComments ? [PostTag, PostComment] : PostTag
   });
 };
 
@@ -25,14 +35,17 @@ const Retrieve__ByID = (id: number): Promise<Post | null> => {
  * 分页查询帖子
  * @param { number } offset
  * @param { number } limit
+ * @param { boolean } withComments
  * @param { boolean } isASC
  */
 const Retrieve__Page = (
   offset: number,
   limit: number,
+  withComments: boolean = true,
   isASC: boolean = false
 ): Promise<Array<Post>> => {
   return Post.findAll({
+    include: withComments ? [PostTag, PostComment] : PostTag,
     offset,
     limit,
     order: [
@@ -41,17 +54,20 @@ const Retrieve__Page = (
     ]
   });
 };
+
 /**
  * 分页模糊查询帖子
  * @param { number } offset
  * @param { number } limit
  * @param { string } content
+ * @param { boolean } withComments
  * @param { boolean } isASC
  */
 const Retrieve__Fuzzy = (
   offset: number,
   limit: number,
   content: string,
+  withComments: boolean = true,
   isASC: boolean = false
 ): Promise<Array<Post>> => {
   return Post.findAll({
@@ -60,6 +76,7 @@ const Retrieve__Fuzzy = (
         [Op.substring]: content
       }
     },
+    include: withComments ? [PostTag, PostComment] : PostTag,
     offset,
     limit,
     order: [['createdAt', isASC ? 'ASC' : 'DESC']]
