@@ -8,6 +8,7 @@ public/*.js
 routes/*.js
 service/*.js
 vo/*.js
+mailer/*.js
 app.js
 
 # secure files

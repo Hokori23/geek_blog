@@ -28,7 +28,7 @@ const config = {
    */
   serverConfig: {
     port: '8003',
-    crytpo: {
+    crypto: {
       // 每次分段加密的字符串最大长度（优先度高于cryptCount字段）
       onceCryptLength: 5,
       // 一次加密至多分段几次加密
@@ -36,7 +36,9 @@ const config = {
       // 返回值格式
       // 如果提供了 encoding，则返回字符串，否则返回 Buffer
       // 可选值：['hex', 'Base64', ...]
-      digest: 'hex'
+      digest: 'hex',
+      // 用于cipher对称加密生成密钥的密码
+      password: 'test'
     },
     jwtConfig: {
       // 密钥
