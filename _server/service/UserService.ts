@@ -212,11 +212,9 @@ const Delete = async (
     if (crypto(password) === operateUser.password) {
       // 匹配密码
       const deleteRow = await Action.Delete(account);
-      if (deleteRow > 0) {
-        return new Restful(0, '注销成功');
-      } else {
-        return new Restful(5, '注销失败');
-      }
+      return deleteRow > 0
+        ? new Restful(0, '注销成功')
+        : new Restful(5, '注销失败');
     }
     return new Restful(4, '密码错误');
   } catch (e) {

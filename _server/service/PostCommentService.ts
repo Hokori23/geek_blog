@@ -1,5 +1,5 @@
 import { PostCommentAction } from '@action';
-import { PostComment, PostTag } from '@vo';
+import { PostComment } from '@vo';
 import { Restful, isUndef } from '@public';
 
 /**
@@ -49,11 +49,9 @@ const Delete = async (id: number, userPower: number) => {
       return new Restful(1, '评论不存在');
     }
     const deleteRow = await PostCommentAction.Delete(id);
-    if (deleteRow > 0) {
-      return new Restful(0, '删除成功');
-    } else {
-      return new Restful(3, '删除失败');
-    }
+    return deleteRow > 0
+      ? new Restful(0, '删除成功')
+      : new Restful(3, '删除失败');
   } catch (e) {
     return new Restful(99, `删除失败, ${e.message}`);
   }
