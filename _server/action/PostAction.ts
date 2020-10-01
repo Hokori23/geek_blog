@@ -1,6 +1,6 @@
-import { Post, PostTag, PostComment } from '@vo';
-
 import { Op, Transaction } from 'sequelize';
+
+import { Post, PostTag, PostComment } from '@vo';
 
 /**
  * 添加帖子

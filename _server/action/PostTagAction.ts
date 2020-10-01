@@ -1,5 +1,6 @@
-import { PostTag, Post } from '@vo';
 import { Op } from 'sequelize';
+
+import { PostTag, Post } from '@vo';
 
 /**
  * 添加帖子标签
