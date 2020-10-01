@@ -1,5 +1,6 @@
-import { isDef } from '@public';
 import { DataTypes, Model } from 'sequelize';
+
+import { isDef } from '@public';
 import DB from '@database';
 
 interface PostCommentAttributes {
@@ -26,7 +27,6 @@ class PostComment extends Model implements PostCommentAttributes {
   public user_agent!: string | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
 
   // 属性转数组
   static toArray(): Array<any> {
