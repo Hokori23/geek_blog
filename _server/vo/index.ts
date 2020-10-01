@@ -2,6 +2,7 @@ import User from './User';
 import Post from './Post';
 import PostTag from './PostTag';
 import PostComment from './PostComment';
+import MailAccepter from './MailAccepter';
 
 // Post : PostTag = N : M
 Post.belongsToMany(PostTag, {
@@ -24,5 +25,5 @@ PostComment.belongsTo(Post, {
   onDelete: 'CASCADE'
 });
 
-export { User, Post, PostTag, PostComment };
-export default { User, Post, PostTag, PostComment };
+export { User, Post, PostTag, PostComment, MailAccepter };
+export default { User, Post, PostTag, PostComment, MailAccepter };
