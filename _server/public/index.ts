@@ -76,7 +76,7 @@ const crypto = (v: string | null) => {
   if (v === null) {
     return v;
   }
-  
+
   const { onceCryptLength, cryptCount, digest } = crytpoConfig;
   const md5 = CRYPTO.createHash('md5');
   const vLength = v.length;
@@ -120,7 +120,7 @@ class Restful {
   code: number;
   message: string;
   data?: any;
-  constructor(code: number, message: string, data = {}) {
+  constructor(code: number, message: string, data: any = null) {
     this.code = code;
     this.message = message;
     this.data = data;
