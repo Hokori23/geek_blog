@@ -47,7 +47,7 @@ MailAccepter.init(
       allowNull: false,
       comment: '订阅者邮箱名'
     },
-    adress: {
+    address: {
       type: DataTypes.STRING(150),
       allowNull: false,
       comment: '订阅者邮箱'
