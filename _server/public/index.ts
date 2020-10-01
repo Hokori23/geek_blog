@@ -69,10 +69,10 @@ const mixin = (attrs: Array<Object>): any => {
 };
 
 /**
- * 加密函数
+ * md5加密函数
  * @param { string } v 加密字段
  */
-const crypto = (v: string | null) => {
+const md5Crypto = (v: string | null): string | null => {
   if (v === null) {
     return v;
   }
@@ -109,6 +109,38 @@ const crypto = (v: string | null) => {
 };
 
 /**
+ * cipher加密函数
+ * @param { string } v 加密字段
+ * @param { string } password 生成密钥的密码
+ */
+const cipherCrypto = (v: string | null, password: string) => {
+  if (!v) {
+    return null;
+  }
+  const key = CRYPTO.scryptSync(password, '盐值', 24);
+  const iv = Buffer.alloc(16, 0); // 初始化向量
+  const cipher = CRYPTO.createCipheriv('aes-192-cbc', key, iv);
+  cipher.update(v);
+  return cipher.final('hex');
+};
+
+/**
+ * cipher解密函数
+ * @param { string } v 解密字段
+ * @param { string } password 生成密钥的密码
+ */
+const decipherCrypto = (v: string | null, password: string) => {
+  if (!v) {
+    return null;
+  }
+  const key = CRYPTO.scryptSync(password, '盐值', 24);
+  const iv = Buffer.alloc(16, 0); // 初始化向量
+  const decipher = CRYPTO.createDecipheriv('aes-192-cbc', key, iv);
+  decipher.update(v, 'hex');
+  return decipher.final('utf-8');
+};
+
+/**
  * Restful API类声明
  */
 interface Restful {
@@ -138,7 +170,9 @@ export {
   emailErrorLocation,
   timeFormat,
   mixin,
-  crypto,
+  md5Crypto,
+  cipherCrypto,
+  decipherCrypto,
   Restful
 };
 export default {
@@ -149,6 +183,8 @@ export default {
   emailErrorLocation,
   timeFormat,
   mixin,
-  crypto,
+  md5Crypto,
+  cipherCrypto,
+  decipherCrypto,
   Restful
 };
