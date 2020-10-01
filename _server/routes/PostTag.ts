@@ -5,6 +5,26 @@ const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 
 /**
+ * 新建帖子标签
+ * @path /create
+ */
+ROUTER.post('/create', async (req, res, next) => {
+  const postTag: PostTag = PostTag.build(req.body);
+
+  try {
+    if (!PostTag.checkIntegrity(['name', 'slug'])) {
+      res.status(200).json(new Restful(1, '参数错误'));
+    } else {
+      res.status(200).json(await Service.Create(postTag, res.locals.userPower));
+    }
+  } catch (e) {
+    // 进行邮件提醒
+    res.status(500).end();
+  }
+  next();
+});
+
+/**
  * 通过标签名查找帖子（分页）
  * @path /retrieve
  */
@@ -23,26 +43,6 @@ ROUTER.get('/retrieve', async (req, res, next) => {
       res
         .status(200)
         .json(await Service.Retrieve__ByTagName(name, page, capacity));
-    }
-  } catch (e) {
-    // 进行邮件提醒
-    res.status(500).end();
-  }
-  next();
-});
-
-/**
- * 新建帖子标签
- * @path /create
- */
-ROUTER.post('/create', async (req, res, next) => {
-  const postTag: PostTag = PostTag.build(req.body);
-
-  try {
-    if (!PostTag.checkIntegrity(['name', 'slug'])) {
-      res.status(200).json(new Restful(1, '参数错误'));
-    } else {
-      res.status(200).json(await Service.Create(postTag, res.locals.userPower));
     }
   } catch (e) {
     // 进行邮件提醒

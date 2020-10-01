@@ -1,28 +1,8 @@
 import { UserService as Service } from '@service';
 import { User } from '@vo';
-import { Restful, isDef, isUndef } from '@public';
+import { Restful } from '@public';
 const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
-
-/**
- * 遍历/单个查询
- * @path /retrieve
- * @param { string } ?account
- */
-ROUTER.get('/retrieve', async (req, res, next) => {
-  const { account } = req.query;
-  try {
-    if (!account) {
-      res.status(200).json(await Service.Retrieve__All());
-    } else {
-      res.status(200).json(await Service.Retrieve(account));
-    }
-  } catch (e) {
-    // 进行邮件提醒
-    res.status(500).end();
-  }
-  next();
-});
 
 /**
  * 注册
@@ -60,6 +40,26 @@ ROUTER.post('/login', async (req, res, next) => {
   }
   try {
     res.status(200).json(await Service.Login(user));
+  } catch (e) {
+    // 进行邮件提醒
+    res.status(500).end();
+  }
+  next();
+});
+
+/**
+ * 遍历/单个查询
+ * @path /retrieve
+ * @param { string } ?account
+ */
+ROUTER.get('/retrieve', async (req, res, next) => {
+  const { account } = req.query;
+  try {
+    if (!account) {
+      res.status(200).json(await Service.Retrieve__All());
+    } else {
+      res.status(200).json(await Service.Retrieve(account));
+    }
   } catch (e) {
     // 进行邮件提醒
     res.status(500).end();

@@ -5,6 +5,32 @@ const EXPRESS = require('express');
 const ROUTER = EXPRESS.Router();
 
 /**
+ * 发布帖子
+ * @path /create
+ */
+ROUTER.post('/create', async (req, res, next) => {
+  const post = Post.build(req.body);
+  const { post_tag_names } = req.body;
+  const { userPower, userAccount } = res.locals;
+
+  try {
+    if (!Post.checkIntegrity(['content'])) {
+      res.status(200).json(new Restful(1, '参数错误'));
+    } else {
+      res
+        .status(200)
+        .json(
+          await Service.Create(post, post_tag_names, userPower, userAccount)
+        );
+    }
+  } catch (e) {
+    // 进行邮件提醒
+    res.status(500).end();
+  }
+  next();
+});
+
+/**
  * 单个查询
  * @path /retrieve-id
  */
@@ -64,32 +90,6 @@ ROUTER.get('/retrieve-fuzzy', async (req, res, next) => {
         .status(200)
         .json(
           await Service.Retrieve__Fuzzy(page, capacity, content, Boolean(isASC))
-        );
-    }
-  } catch (e) {
-    // 进行邮件提醒
-    res.status(500).end();
-  }
-  next();
-});
-
-/**
- * 发布帖子
- * @path /create
- */
-ROUTER.post('/create', async (req, res, next) => {
-  const post = Post.build(req.body);
-  const { post_tag_names } = req.body;
-  const { userPower, userAccount } = res.locals;
-
-  try {
-    if (!Post.checkIntegrity(['content'])) {
-      res.status(200).json(new Restful(1, '参数错误'));
-    } else {
-      res
-        .status(200)
-        .json(
-          await Service.Create(post, post_tag_names, userPower, userAccount)
         );
     }
   } catch (e) {
