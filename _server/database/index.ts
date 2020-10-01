@@ -2,8 +2,10 @@ const { dataBaseConfig } = require('../../geekblog.config');
 import { Sequelize } from 'sequelize';
 
 const { database, user, password, options } = dataBaseConfig;
-
-const DB = new Sequelize(database, user, password, options);
+const DB = new Sequelize(database, user, password, {
+  ...options,
+  logging: process.env.NODE_ENV === 'development' ? console.log : false // 是否输出数据库日志
+});
 
 (async () => {
   try {
