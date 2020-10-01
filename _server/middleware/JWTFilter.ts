@@ -1,6 +1,6 @@
 import { UserAction } from '@action';
 import { serverConfig, blogConfig } from '@config';
-import { isUndef, QUERY_METHODS, BODY_METHODS, Restful, crypto } from '@public';
+import { isUndef, QUERY_METHODS, BODY_METHODS, Restful, md5Crypto } from '@public';
 
 const { jwtConfig, baseURL } = serverConfig;
 const JWT = require('jwt-simple');
@@ -17,7 +17,7 @@ if (isUndef(jwtConfig.key)) {
     'geekblog.config.js缺少字段: serverConfig.jwtConfig.key'
   );
 }
-const jwtKey = crypto(jwtConfig.key);
+const jwtKey = md5Crypto(jwtConfig.key);
 
 // token过期时间（默认：1天）
 const tokenExpiresTime =

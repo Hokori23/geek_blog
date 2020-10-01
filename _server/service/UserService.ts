@@ -1,6 +1,6 @@
 import { UserAction as Action } from '@action';
 import { User } from '@vo';
-import { Restful, crypto } from '@public';
+import { Restful, md5Crypto } from '@public';
 
 /**
  * 初始化超级管理员
@@ -17,7 +17,7 @@ const Create__SuperAdmin = async (user: User): Promise<Restful> => {
     }
 
     // 加密密码
-    user.password = crypto(user.password);
+    user.password = md5Crypto(user.password);
 
     /**
      * 1. 权限0: 超级管理员
@@ -45,7 +45,7 @@ const Create__Admin = async (user: User): Promise<Restful> => {
       return new Restful(1, '账号已存在');
     }
     // 加密密码
-    user.password = crypto(<string>user.password);
+    user.password = md5Crypto(<string>user.password);
 
     /**
      * 1. 权限1: 管理员
@@ -76,7 +76,7 @@ const Register = async (user: User): Promise<Restful> => {
       return new Restful(2, '你无权限创建此类账号');
     }
     // 加密密码
-    user.password = crypto(<string>user.password);
+    user.password = md5Crypto(<string>user.password);
 
     // 去除ID（自增字段）
     user.id = null;
@@ -101,7 +101,7 @@ const Login = async (user: User): Promise<Restful> => {
       return new Restful(1, '账号不存在');
     }
     // 匹配密码
-    if (crypto(<string>password) === user.password) {
+    if (md5Crypto(<string>password) === user.password) {
       // 脱敏
       user.password = null;
       return new Restful(0, '登陆成功', user.toJSON());
@@ -170,8 +170,8 @@ const EditIncludePassword = async (user: User, old_password) => {
     if (!existedUser) {
       return new Restful(1, '账号不存在');
     }
-    if (crypto(<string>old_password) === existedUser.password) {
-      user.password = crypto(<string>user.password);
+    if (md5Crypto(<string>old_password) === existedUser.password) {
+      user.password = md5Crypto(<string>user.password);
       const newUser: User = await Action.Update(existedUser, user);
 
       // 脱敏
@@ -209,7 +209,7 @@ const Delete = async (
         return new Restful(1, '你无权删除他人的账号！');
       }
     }
-    if (crypto(password) === operateUser.password) {
+    if (md5Crypto(password) === operateUser.password) {
       // 匹配密码
       const deleteRow = await Action.Delete(account);
       return deleteRow > 0
