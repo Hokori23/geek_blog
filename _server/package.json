@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "serve": "cross-env NODE_ENV=production node ./bin/www.js",
-    "dev": "node ./bin/www.js",
+    "dev": "cross-env NODE_ENV=development node ./bin/www.js",
     "build": "ttsc",
     "build:watch": "ttsc -w"
   },
