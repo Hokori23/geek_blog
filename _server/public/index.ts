@@ -1,5 +1,5 @@
 import { serverConfig } from '@config';
-const crytpoConfig = serverConfig.crytpo;
+const cryptoConfig = serverConfig.crypto;
 import moment from 'moment';
 import CRYPTO from 'crypto';
 
@@ -77,7 +77,7 @@ const md5Crypto = (v: string | null): string | null => {
     return v;
   }
 
-  const { onceCryptLength, cryptCount, digest } = crytpoConfig;
+  const { onceCryptLength, cryptCount, digest } = cryptoConfig;
   const md5 = CRYPTO.createHash('md5');
   const vLength = v.length;
   // 每次分段加密的字符串最大长度
