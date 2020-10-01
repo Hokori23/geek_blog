@@ -1,5 +1,5 @@
 import colors from 'vuetify/es5/util/colors';
-import { clientConfig, serverConfig } from '../geekblog.config';
+import { blogConfig, serverConfig } from '../geekblog.config';
 
 export default {
   /*
@@ -89,8 +89,8 @@ export default {
   },
   dev: process.env.NODE_ENV !== 'production',
   env: {
-    // baseUrl: process.env.BASE_URL || clientConfig.publicPath
-    baseUrl: clientConfig.publicPath
+    // baseUrl: process.env.BASE_URL || blogConfig.publicPath
+    baseUrl: blogConfig.publicPath
   },
   /*
    ** vuetify module configuration
