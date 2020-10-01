@@ -9,6 +9,7 @@ routes/*.js
 service/*.js
 vo/*.js
 mailer/*.js
+mailer/template/*.js
 app.js
 
 # secure files
