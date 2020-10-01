@@ -12,8 +12,8 @@ const Create = (postComment: PostComment): Promise<PostComment> => {
  * 通过评论ID查询评论
  * @param { number } id
  */
-const Retrieve__ByID = (id: number): Promise<Array<PostComment>> => {
-  return PostComment.findAll({
+const Retrieve__ByID = (id: number): Promise<PostComment | null> => {
+  return PostComment.findOne({
     where: {
       id
     }
