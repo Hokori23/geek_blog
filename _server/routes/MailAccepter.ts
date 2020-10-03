@@ -1,7 +1,8 @@
+import EXPRESS from 'express';
+
 import { MailAccepterService as Service } from '@service';
 import { MailAccepter } from '@vo';
-import { Restful, isUndef } from '@public';
-const EXPRESS = require('express');
+import { Restful } from '@public';
 const ROUTER = EXPRESS.Router();
 
 /**

@@ -1,7 +1,9 @@
+import EXPRESS from 'express';
+
 import { UserService as Service } from '@service';
 import { User } from '@vo';
 import { Restful } from '@public';
-const EXPRESS = require('express');
+
 const ROUTER = EXPRESS.Router();
 
 /**

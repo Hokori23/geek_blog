@@ -1,4 +1,5 @@
-const EXPRESS = require('express');
+import EXPRESS from 'express';
+
 const ROUTER = EXPRESS.Router();
 
 /* GET home page. */

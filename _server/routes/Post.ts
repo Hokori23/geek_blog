@@ -1,7 +1,9 @@
+import EXPRESS from 'express';
+
 import { PostService as Service } from '@service';
 import { Post } from '@vo';
-import { Restful, isDef, isUndef } from '@public';
-const EXPRESS = require('express');
+import { Restful, isUndef } from '@public';
+
 const ROUTER = EXPRESS.Router();
 
 /**

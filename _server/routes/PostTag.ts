@@ -1,7 +1,9 @@
+import EXPRESS from 'express';
+
 import { PostTagService as Service } from '@service';
 import { PostTag } from '@vo';
 import { Restful, isUndef } from '@public';
-const EXPRESS = require('express');
+
 const ROUTER = EXPRESS.Router();
 
 /**
