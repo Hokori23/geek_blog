@@ -69,6 +69,23 @@ const mixin = (attrs: Array<Object>): any => {
 };
 
 /**
+ * @param { Function } callback 回调函数
+ * @param { number } delay 延迟ms
+ * @description 输出一个经过防抖处理的函数
+ */
+const debounce = (callback: Function, delay: number): Function => {
+  return (() => {
+    let timer: number | any = null;
+    return (...params: any[]) => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(callback, delay, params);
+    };
+  })();
+};
+
+/**
  * md5加密函数
  * @param { string } v 加密字段
  */
@@ -170,6 +187,7 @@ export {
   emailErrorLocation,
   timeFormat,
   mixin,
+  debounce,
   md5Crypto,
   cipherCrypto,
   decipherCrypto,
@@ -183,6 +201,7 @@ export default {
   emailErrorLocation,
   timeFormat,
   mixin,
+  debounce,
   md5Crypto,
   cipherCrypto,
   decipherCrypto,
