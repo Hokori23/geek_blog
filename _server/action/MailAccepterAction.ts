@@ -30,6 +30,13 @@ const Retrieve__ByNameOrAddress = async (
 };
 
 /**
+ * 遍历订阅者
+ */
+const Retrieve__All = (): Promise<Array<MailAccepter>> => {
+  return MailAccepter.findAll();
+};
+
+/**
  * 取消订阅
  * @param { number } id
  */
@@ -44,5 +51,6 @@ const Delete = async (id: number): Promise<number> => {
 export default {
   Create,
   Retrieve__ByNameOrAddress,
+  Retrieve__All,
   Delete
 };
