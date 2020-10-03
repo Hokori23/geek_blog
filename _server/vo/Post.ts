@@ -26,6 +26,9 @@ interface PostAttributes {
   cover_url: string | null;
   createdAt: Date;
   updatedAt: Date;
+
+  PostTags: Array<PostTag>;
+  PostComments: Array<PostComment>;
 }
 
 class Post extends Model implements PostAttributes {
@@ -48,12 +51,14 @@ class Post extends Model implements PostAttributes {
   public hasPostTag!: HasManyHasAssociationMixin<PostTag, number>;
   public countPostTags!: HasManyCountAssociationsMixin;
   public createPostTag!: HasManyCreateAssociationMixin<PostTag>;
+  public PostTags!: Array<PostTag>;
 
   public getPostComments!: HasManyGetAssociationsMixin<PostComment>;
   public addPostComment!: HasManyAddAssociationMixin<PostComment, number>;
   public hasPostComment!: HasManyHasAssociationMixin<PostComment, number>;
   public countPostComments!: HasManyCountAssociationsMixin;
   public createPostComment!: HasManyCreateAssociationMixin<PostComment>;
+  public PostComments!: Array<PostComment>;
 
   // 属性转数组
   static toArray(): Array<any> {

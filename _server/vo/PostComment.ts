@@ -5,6 +5,7 @@ import DB from '@database';
 
 interface PostCommentAttributes {
   id: number | null;
+  post_id: number;
   parent_id: number | null; // 为null时是顶层评论，记得处理结果集
   content: string;
   username: string;
@@ -17,6 +18,7 @@ interface PostCommentAttributes {
 
 class PostComment extends Model implements PostCommentAttributes {
   public id!: number | null;
+  public post_id!: number;
   public parent_id!: number | null; // 为null时是顶层评论，记得处理结果集
   public content!: string;
   public username!: string;
