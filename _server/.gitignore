@@ -1,15 +1,14 @@
 node_modules/
 
-action/*.js
-bin/*.js
-database/*.js
-middleware/*.js
-public/*.js
-routes/*.js
-service/*.js
-vo/*.js
-mailer/*.js
-mailer/template/*.js
+action/**/*.js
+bin/**/*.js
+database/**/*.js
+middleware/**/*.js
+public/**/*.js
+routes/**/*.js
+service/**/*.js
+vo/**/*.js
+mailer/**/*.js
 app.js
 
 # secure files
