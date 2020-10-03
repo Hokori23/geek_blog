@@ -7,6 +7,10 @@ import { blogConfig, serverConfig } from '@config';
 const { SubscribeConfirmTemplate } = template;
 const { password } = serverConfig.crypto;
 
+/**
+ * 发送确认订阅邮件
+ * @param { MailAccepter } mailAccepter
+ */
 const SendSubscribeConfirmEmail = async (
   mailAccepter: MailAccepter
 ): Promise<Restful> => {
@@ -34,11 +38,10 @@ const SendSubscribeConfirmEmail = async (
         password
       )}&address=${cipherCrypto(address, password)}`
     };
-    console.log(SubscribeConfirmAttributes);
     // 设置：邮件过期时间
     await send(
       `是否确认订阅${blogConfig.blogName}的最新消息`,
-      SubscribeConfirmTemplate(SubscribeConfirmAttributes),
+      await SubscribeConfirmTemplate(SubscribeConfirmAttributes),
       mailAccepter
     );
     return new Restful(0, '发送订阅确认邮件成功', {
@@ -47,6 +50,27 @@ const SendSubscribeConfirmEmail = async (
     });
   } catch (e) {
     return new Restful(99, `发送订阅确认邮件失败, ${e.message}`);
+  }
+};
+
+/**
+ * 广播邮件
+ * @param { string } subject  邮件标题
+ * @param { string } html 邮件模板
+ * @param { Array<MailAccepter> | null } mailAccepters  邮件接收者
+ */
+const Broadcast = async (
+  subject: string,
+  html: string,
+  mailAccepters: Array<MailAccepter> | null = null
+): Promise<Restful> => {
+  try {
+    // 默认值为mail_accepter表内所有订阅者
+    mailAccepters = mailAccepters || (await Action.Retrieve__All());
+    await broadcast(subject, html, mailAccepters);
+    return new Restful(0, '广播邮件成功');
+  } catch (e) {
+    return new Restful(99, `广播邮件失败, ${e.message}`);
   }
 };
 
@@ -74,22 +98,6 @@ const Subscribe = async (mailAccepter: MailAccepter): Promise<Restful> => {
 };
 
 /**
- * 通过name或address查询订阅者
- * @param { string } name
- * @param { string } address
- */
-const Retrieve__ByNameOrAddress = async (
-  name: string,
-  address: string
-): Promise<Restful> => {
-  return new Restful(
-    0,
-    '查询成功',
-    await Action.Retrieve__ByNameOrAddress(name, address)
-  );
-};
-
-/**
  * 取消订阅
  * @param { number } id
  */
@@ -105,6 +113,8 @@ const Unsubscribe = async (id: number): Promise<Restful> => {
 };
 
 export default {
+  SendSubscribeConfirmEmail,
+  Broadcast,
   Subscribe,
   Unsubscribe
 };
