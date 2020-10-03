@@ -26,16 +26,6 @@ const SENDER_OPTIONS = {
   }
 };
 
-// 接收邮件的邮箱列表
-const ACCEPTERS = [
-  {
-    to: {
-      name: '无情小尘埃_Hokori',
-      address: 'hokori23@qq.com'
-    }
-  }
-];
-
 /**
  * @param { string } subject 邮件标题
  * @param { string } html 邮件模板
@@ -51,7 +41,8 @@ const broadcast = (
     const transporter = NodeMailer.createTransport(MAILER_OPTIONS);
 
     // 添加to, subject, HTML文本内容属性
-    const sendOptions = Object.assign(SENDER_OPTIONS, accepter, {
+    const sendOptions = Object.assign(SENDER_OPTIONS, {
+      to: accepter,
       subject,
       html
     });
@@ -102,7 +93,8 @@ const send = (
     );
     const transporter = NodeMailer.createTransport(MAILER_OPTIONS);
     // 添加to, subject, HTML文本内容属性
-    const sendOptions = Object.assign(SENDER_OPTIONS, accepter, {
+    const sendOptions = Object.assign(SENDER_OPTIONS, {
+      to: accepter,
       subject,
       html
     });
