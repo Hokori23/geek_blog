@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title><% if (title) { %> <%= title %> <% } %></title>
+  </head>
+  <body>
+    <table style="width: 100%; height: 100%">
+      <tbody>
+        <tr>
+          <% if (css) { %> <%- css %> <% } %>
+          <td>
+            <div class="mail__container">
+              <!-- 订阅者名称 -->
+              <% if (name) { %>
+              <div class="mail__container__subscriber"><%= name %></div>
+              <% } %>
+              <!-- 订阅者邮箱 -->
+              <% if (address) { %>
+              <div class="mail__container__address"><%= address %></div>
+              <% } %>
+              <!-- 订阅链接 -->
+              <% if (subscribeUrl) { %>
+              <div class="mail__container__subscribeUrl">
+                <a href="<%= subscribeUrl %>">确认订阅</a>
+              </div>
+              <% } %>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

@@ -11,6 +11,7 @@
     "build:watch": "ttsc -w"
   },
   "dependencies": {
+    "ejs": "^3.1.5",
     "express": "~4.16.1",
     "jwt-simple": "^0.5.6",
     "moment": "^2.29.0",
@@ -23,6 +24,7 @@
     "@types/validator": "^13.1.0",
     "@zerollup/ts-transform-paths": "^1.7.18",
     "cross-env": "^7.0.2",
+    "precss": "^4.0.0",
     "ttypescript": "^1.5.10",
     "typescript": "^3.9.7"
   }

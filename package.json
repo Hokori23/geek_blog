@@ -36,5 +36,9 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
-  }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
 }
