@@ -19,7 +19,7 @@ const Create = async (
   const t = await DB.transaction();
   try {
     if (isUndef(userPower) || userPower > 1) {
-      return new Restful(1, `创建失败, 权限不足`);
+      return new Restful(1, `发布帖子失败, 权限不足`);
     }
     post.user_account = userAccount;
 
@@ -43,10 +43,10 @@ const Create = async (
     await Promise.all(promises);
     t.commit();
     post = (await PostAction.Retrieve__ByID(<number>post.id)) as Post;
-    return new Restful(0, '创建成功', post.toJSON());
+    return new Restful(0, '发布帖子成功', post.toJSON());
   } catch (e) {
     await t.rollback();
-    return new Restful(99, `创建失败, ${e.message}`);
+    return new Restful(99, `发布帖子失败, ${e.message}`);
   }
 };
 
