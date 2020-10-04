@@ -2,11 +2,15 @@ import precss from 'precss';
 import fs from 'fs';
 import path from 'path';
 import ejs from 'ejs';
+import moment from 'moment';
+import juice from 'juice';
+moment.locale('zh-cn');
 
+import { blogConfig } from '@config';
 import { MailAccepter } from '@vo';
 
 /**
- * @description 使用precss编译scss, sass, 如果运行中需要应用更改后的scss, sass样式，需要重新调用该函数
+ * @description 使用precss编译scss, sass, 如果非调试状态(isTesting = false)运行中需要应用更改后的scss, sass样式，需要重新调用该函数
  */
 const compilerStyleFile = (isTesting: boolean = false): Promise<any> => {
   return new Promise(async (resolve) => {
@@ -51,12 +55,17 @@ const OutputTemplate = async (
   // 若出现雪崩问题，可使用events.EventEmitter().once解决
   // 《深入浅出Node》Ch4.3 P77
   const template = fs.readFileSync(path.resolve(__dirname, 'template.ejs'));
-  return ejs.render(template.toString(), {
-    title,
-    subscribeUrl,
-    name,
-    address,
-    css: `<style>${cssOutputString}</style>`
-  });
+  return juice(
+    ejs.render(template.toString(), {
+      title,
+      subscribeUrl,
+      name,
+      address,
+      css: `<style>${cssOutputString}</style>`,
+      blogConfig,
+      time: moment().format('lll')
+    }),
+    { inlinePseudoElements: true }
+  );
 };
 export default OutputTemplate;
