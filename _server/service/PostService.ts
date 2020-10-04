@@ -1,5 +1,6 @@
 import { PostAction, PostTagAction } from '@action';
-import { Post, PostTag } from '@vo';
+import { MailAccepterService } from '@service';
+import { Post, Setting } from '@vo';
 import { Restful, isUndef } from '@public';
 import DB from '@database';
 
@@ -43,6 +44,9 @@ const Create = async (
     await Promise.all(promises);
     t.commit();
     post = (await PostAction.Retrieve__ByID(<number>post.id)) as Post;
+
+    // 广播邮件
+    MailAccepterService.Broadcast__WhenNewPost(post);
     return new Restful(0, '发布帖子成功', post.toJSON());
   } catch (e) {
     await t.rollback();
