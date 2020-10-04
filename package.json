@@ -26,7 +26,9 @@
     "url": "https://github.com/Hokori23/geek_blog/issues"
   },
   "homepage": "https://github.com/Hokori23/geek_blog#readme",
-  "dependencies": {},
+  "dependencies": {
+    "juice": "^7.0.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
