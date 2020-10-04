@@ -1,7 +1,9 @@
 import {
   Home as HomeRouter,
   User as UserRouter,
-  Post as PostRouter
+  Post as PostRouter,
+  PostTag as PostTagRouter,
+  MailAccepter as MailAccepterRouter
 } from '@routes';
 
 import {
@@ -35,6 +37,8 @@ APP.use(LoggerMiddle); // 如果JWTFilter已给出响应，整个中间件链在
 APP.use('/', HomeRouter);
 APP.use('/user', UserRouter);
 APP.use('/post', PostRouter);
+APP.use('/post-tag', PostTagRouter);
+APP.use('/mail', MailAccepterRouter);
 
 // 中间件
 APP.use(LoggerEnd);
