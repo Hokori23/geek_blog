@@ -19,16 +19,16 @@ let isWatching: boolean = false;
 const Test = async (
   outputFilePath: string,
   watchFiles: Array<string> = [],
-  callback?: Function
 ) => {
   const outputString = await OutputTemplate(
     {
-      title: '标题',
+      title: 'testTitle',
       accepter: <MailAccepter>{
         name: 'testName',
         address: 'example@example.com'
       },
-      subscribeUrl: 'https://example.com'
+      subscribeUrl:
+        'https://example.com/mail/subscribe-confirm?name=b8ea69d0573954a20348df29cb3f4539&address=e5d7416832a0084a6b8bbdaa57327adf'
     },
     true
   );
