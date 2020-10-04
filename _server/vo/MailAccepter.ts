@@ -7,12 +7,14 @@ interface MailAccepterAttributes {
   id: number | null;
   name: string;
   address: string;
+  isActived: boolean | null;
 }
 
 class MailAccepter extends Model implements MailAccepterAttributes {
   public id!: number | null;
   public name!: string;
   public address!: string;
+  public isActived!: boolean | null;
 
   // 属性转数组
   static toArray(): Array<any> {
@@ -45,12 +47,19 @@ MailAccepter.init(
     name: {
       type: DataTypes.STRING(20),
       allowNull: false,
+      unique: 'name',
       comment: '订阅者邮箱名'
     },
     address: {
       type: DataTypes.STRING(150),
       allowNull: false,
+      unique: 'address',
       comment: '订阅者邮箱'
+    },
+    isActived: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      comment: '是否激活'
     }
   },
   {
