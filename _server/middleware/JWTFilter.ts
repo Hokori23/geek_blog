@@ -37,7 +37,11 @@ const publicList = [
   `${baseURL}/user/retrieve`,
   `${baseURL}/post/retrieve-id`,
   `${baseURL}/post/retrieve`,
-  `${baseURL}/post/retrieve-fuzzy`
+  `${baseURL}/post/retrieve-fuzzy`,
+  `${baseURL}/post-tag/retrieve`,
+  `${baseURL}/mail/subscribe-confirm`,
+  `${baseURL}/mail/subscribe`,
+  `${baseURL}/mail/unsubscribe`,
 ];
 
 /**
