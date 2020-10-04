@@ -49,7 +49,7 @@ const timeFormat = (timeStamp?: number | string): string => {
  */
 const mixin = (attrs: Array<Object>): any => {
   if (isUndef(attrs)) {
-    throw new ReferenceError('参数错误: [ attrs: Array, flag?: Boolean ]');
+    throw new ReferenceError('参数错误: [ attrs: Array, flag?: boolean ]');
   }
   // 检查传参类型
   for (let i = attrs.length - 1; i > 0; i--) {
