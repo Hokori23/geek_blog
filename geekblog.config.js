@@ -6,16 +6,16 @@ const config = {
    */
   blogConfig: {
     // 博客名
-    blogName: '',
+    blogName: 'BlogName',
 
     // 博客简述
-    blogBio: '',
+    blogBio: 'BlogBio',
 
     // 博主名
-    bloggerName: '',
+    bloggerName: 'Blogger',
 
     // 部署时的公共路径
-    publicPath: 'https://hokori.online',
+    publicPath: 'https://example.com',
 
     // 插件
     plugins: []
