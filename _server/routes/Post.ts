@@ -2,13 +2,18 @@ import EXPRESS from 'express';
 
 import { PostService as Service } from '@service';
 import { Post } from '@vo';
-import { Restful, isUndef } from '@public';
+import { Restful, isUndef, checkIntegrity } from '@public';
 
 const ROUTER = EXPRESS.Router();
 
 /**
  * 发布帖子
  * @path /create
+ * @description post_tag_names
+ * [
+ *  'JavaScript', // tag_name
+ *  'Java'
+ * ]
  */
 ROUTER.post('/create', async (req, res, next) => {
   const post = Post.build(req.body);
@@ -16,7 +21,7 @@ ROUTER.post('/create', async (req, res, next) => {
   const { userPower, userAccount } = res.locals;
 
   try {
-    if (!Post.checkIntegrity(['content'])) {
+    if (!checkIntegrity(post, ['content'])) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
       res
@@ -56,14 +61,24 @@ ROUTER.get('/retrieve-id', async (req, res, next) => {
  * @path /retrieve
  */
 ROUTER.get('/retrieve', async (req, res, next) => {
-  const { page, capacity, isASC } = req.query;
+  const { page, capacity, withComments, isASC, showDrafts } = req.query;
+  const { userPower } = res.locals;
   try {
     if (isUndef(page) || isUndef(capacity) || page < 0 || capacity < 0) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
       res
         .status(200)
-        .json(await Service.Retrieve__Page(page, capacity, Boolean(isASC)));
+        .json(
+          await Service.Retrieve__Page(
+            page,
+            capacity,
+            withComments,
+            isASC,
+            userPower,
+            showDrafts
+          )
+        );
     }
   } catch (e) {
     // 进行邮件提醒
@@ -77,7 +92,7 @@ ROUTER.get('/retrieve', async (req, res, next) => {
  * @path /retrieve-fuzzy
  */
 ROUTER.get('/retrieve-fuzzy', async (req, res, next) => {
-  const { page, capacity, content, isASC } = req.query;
+  const { page, capacity, content, withComments, isASC } = req.query;
   try {
     if (
       isUndef(page) ||
@@ -91,7 +106,13 @@ ROUTER.get('/retrieve-fuzzy', async (req, res, next) => {
       res
         .status(200)
         .json(
-          await Service.Retrieve__Fuzzy(page, capacity, content, Boolean(isASC))
+          await Service.Retrieve__Fuzzy(
+            page,
+            capacity,
+            content,
+            withComments,
+            isASC
+          )
         );
     }
   } catch (e) {
@@ -110,7 +131,7 @@ ROUTER.post('/edit', async (req, res, next) => {
   const { userPower, userAccount } = res.locals;
 
   try {
-    if (!Post.checkIntegrity(['id', 'content'])) {
+    if (!checkIntegrity(post, ['id', 'content'])) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
       res.status(200).json(await Service.Edit(post, userPower, userAccount));

@@ -1,11 +1,11 @@
 import { PostAction, PostTagAction } from '@action';
 import { MailAccepterService } from '@service';
-import { Post, Setting } from '@vo';
-import { Restful, isUndef } from '@public';
+import { Post } from '@vo';
+import { Restful, isUndef, isDef } from '@public';
 import DB from '@database';
 
 /**
- * 发布帖子
+ * 发布帖子(保存草稿)
  * @param { Post } post
  * @param { string } post_tag_name
  * @param { number } userPower
@@ -42,15 +42,23 @@ const Create = async (
       promises.push(post.addPostTag(postTag, { transaction: t }));
     });
     await Promise.all(promises);
-    post = (await PostAction.Retrieve__ByID(<number>post.id)) as Post;
     await t.commit();
+    post = (await PostAction.Retrieve__ByID(<number>post.id)) as Post;
 
     // 广播邮件
     MailAccepterService.Broadcast__WhenNewPost(post);
-    return new Restful(0, '发布帖子成功', post.toJSON());
+    return new Restful(
+      0,
+      `${post.is_draft ? '发布帖子' : '保存草稿'}成功`,
+      post.toJSON()
+    );
   } catch (e) {
+    console.log(e.message);
     await t.rollback();
-    return new Restful(99, `发布帖子失败, ${e.message}`);
+    return new Restful(
+      99,
+      `${post.is_draft ? '发布帖子' : '保存草稿'}失败, ${e.message}`
+    );
   }
 };
 
@@ -84,26 +92,37 @@ const Retrieve__ByID = async (
  * @param { number } capacity
  * @param { boolean } withComments
  * @param { boolean } isASC
+ * @param { number } userPower
+ * @param { boolean } showDrafts
  */
 const Retrieve__Page = async (
   page: number,
   capacity: number,
   withComments: boolean = true,
-  isASC: boolean = false
+  isASC: boolean = false,
+  userPower: number,
+  showDrafts: boolean = false
 ): Promise<Restful> => {
   try {
+    if (isDef(userPower) && <number>userPower > 1) {
+      return new Restful(1, '权限不足');
+    }
     const existedPosts = await PostAction.Retrieve__Page(
       (page - 1) * capacity,
       Number(capacity),
-      withComments,
-      isASC
+      Boolean(withComments),
+      Boolean(isASC)
     );
     return new Restful(
       0,
       '查询成功',
-      existedPosts.map((post) => {
-        return post.toJSON();
-      })
+      existedPosts
+        .filter((post) => {
+          return showDrafts || !post.is_draft;
+        })
+        .map((post) => {
+          return post.toJSON();
+        })
     );
   } catch (e) {
     return new Restful(99, `查询失败, ${e.message}`);
@@ -130,15 +149,19 @@ const Retrieve__Fuzzy = async (
       (page - 1) * capacity,
       Number(capacity),
       content,
-      withComments,
-      isASC
+      Boolean(withComments),
+      Boolean(isASC)
     );
     return new Restful(
       0,
       '查询成功',
-      existedPosts.map((post) => {
-        return post.toJSON();
-      })
+      existedPosts
+        .filter((post) => {
+          return !post.is_draft;
+        })
+        .map((post) => {
+          return post.toJSON();
+        })
     );
   } catch (e) {
     return new Restful(99, `查询失败, ${e.message}`);
