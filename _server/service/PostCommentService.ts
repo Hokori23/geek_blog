@@ -1,4 +1,5 @@
 import { PostCommentAction as Action, PostAction } from '@action';
+import { MailAccepterService } from '@service';
 import { Post, PostComment } from '@vo';
 import { Restful, isUndef } from '@public';
 import DB from '@database';
@@ -14,6 +15,7 @@ const Create = async (postComment): Promise<Restful> => {
     if (!post) {
       return new Restful(1, '帖子不存在');
     }
+    const hasParentComment = postComment.parent_id;
     if (
       postComment.parent_id &&
       !post.PostComments.some(
@@ -31,6 +33,10 @@ const Create = async (postComment): Promise<Restful> => {
 
     const promiseValues = await Promise.all(promises);
     postComment = promiseValues[0];
+    if (hasParentComment) {
+      MailAccepterService.Broadcast__WhenReply(post, postComment);
+    }
+
     await t.commit();
     return new Restful(0, '创建成功', postComment.toJSON());
   } catch (e) {
@@ -111,7 +117,7 @@ const Delete = async (id: number, userPower: number) => {
     ];
     const promisesValue = await Promise.all(promises);
     const deleteRow = promisesValue[0];
-    
+
     return deleteRow > 0
       ? new Restful(0, '删除成功') && t.commit()
       : new Restful(3, '删除失败') && t.rollback();

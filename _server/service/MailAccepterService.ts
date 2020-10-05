@@ -1,6 +1,12 @@
-import { MailAccepterAction as Action, SettingAction } from '@action';
+import moment from 'moment';
+
+import {
+  MailAccepterAction as Action,
+  SettingAction,
+  PostCommentAction
+} from '@action';
 import { Restful, isUndef, cipherCrypto, decipherCrypto } from '@public';
-import { MailAccepter, Setting, Post } from '@vo';
+import { MailAccepter, Setting, Post, PostComment } from '@vo';
 import { broadcast, send, template } from '@mailer';
 import { blogConfig, serverConfig } from '@config';
 
@@ -13,9 +19,11 @@ const { password } = serverConfig.crypto;
  *
  */
 interface MailSettingJSON {
-  accepter_new_subscriber: boolean;
-  broadcast_when_newPost: boolean;
-  send_mail_when_reply_comment: boolean;
+  accepter_new_subscriber: boolean; // 接受新的订阅者
+  broadcast_when_newPost: boolean; // 当新帖子发布时广播邮件
+  send_mail_when_reply_comment: boolean; // 当评论有回复时邮件(全局)
+  subscribe_confirm_email_expire_time: number; // 订阅确认邮件过期时间(天)
+  unsubscribe_need_confirm: boolean; // 取消订阅时是否需要发送确认邮件
 }
 const settingName = 'mail_setting';
 
@@ -23,10 +31,13 @@ const settingName = 'mail_setting';
  * 初始化邮箱设置
  */
 const InitSetting = async (): Promise<Setting | boolean> => {
+  // 默认初始化设置
   const mailSettingJSON: MailSettingJSON = {
     accepter_new_subscriber: true,
     broadcast_when_newPost: true,
-    send_mail_when_reply_comment: true
+    send_mail_when_reply_comment: true,
+    subscribe_confirm_email_expire_time: 1,
+    unsubscribe_need_confirm: false
   };
   return SettingAction.Init(
     Setting.build({
@@ -97,17 +108,17 @@ const SendSubscribeConfirmEmail = async (
         ? new Restful(2, '发送订阅确认邮件失败，订阅者名字已存在')
         : new Restful(3, '发送订阅确认邮件失败，订阅者邮箱已存在');
     }
+
+    const encryptedName = cipherCrypto(name, password);
+    const encryptedAddress = cipherCrypto(address, password);
+    const encryptedTime = cipherCrypto(String(Date.now()), password);
+
     const SubscribeConfirmAttributes = {
       title: `确认订阅${blogConfig.blogName}`,
       accepter: mailAccepter,
-      subscribeUrl: `${
-        blogConfig.publicPath
-      }/mail/subscribe?name=${cipherCrypto(
-        name,
-        password
-      )}&address=${cipherCrypto(address, password)}`
+      subscribeUrl: `${blogConfig.publicPath}/mail/subscribe?name=${encryptedName}&address=${encryptedAddress}&time=${encryptedTime}`
     };
-    // 设置：邮件过期时间
+
     await send(
       `是否确认订阅${blogConfig.blogName}的最新消息`,
       await SubscribeConfirmTemplate(SubscribeConfirmAttributes),
@@ -125,65 +136,32 @@ const SendSubscribeConfirmEmail = async (
 };
 
 /**
- * 广播邮件
- * @param { string } subject  邮件标题
- * @param { string } html 邮件模板
- * @param { Array<MailAccepter> | null } mailAccepters  邮件接收者
- */
-const Broadcast = async (
-  subject: string,
-  html: string,
-  mailAccepters: Array<MailAccepter> | null = null
-): Promise<Restful> => {
-  try {
-    // 默认值为mail_accepter表内所有已激活的订阅者
-    mailAccepters = mailAccepters || (await Action.Retrieve__All__IsActived());
-    await broadcast(subject, html, mailAccepters);
-    return new Restful(0, '广播邮件成功');
-  } catch (e) {
-    return new Restful(99, `广播邮件失败, ${e.message}`);
-  }
-};
-
-/**
- * 当发布帖子时广播邮件
- * @param { Post } post
- */
-const Broadcast__WhenNewPost = async (post: Post): Promise<Restful> => {
-  // 检查设置
-  const setting = await SettingAction.Retrieve__ByName(settingName);
-  if (!setting) {
-    return new Restful(2, '发送订阅确认邮件失败，设置项不存在');
-  }
-  const setting_json = <MailSettingJSON>JSON.parse(setting.setting_json);
-  if (!setting_json.broadcast_when_newPost) {
-    return new Restful(1, '发送订阅确认邮件失败，设置为禁止广播邮件');
-  }
-
-  const subject = `你关注的博主${blogConfig.blogger}更新啦 -- 来自${blogConfig.blogName}`;
-
-  const SubscribeConfirmAttributes = {
-    title: `确认订阅${blogConfig.blogName}`,
-    accepter: <MailAccepter>{},
-    subscribeUrl: ``
-  };
-  const html = await SubscribeConfirmTemplate(SubscribeConfirmAttributes);
-  return Broadcast(subject, html);
-};
-/**
  * 订阅
  * @param { MailAccepter } mailAccepter
+ * @param { string } sentTime 邮件发送的时间
  */
-const Subscribe = async (mailAccepter: MailAccepter): Promise<Restful> => {
+const Subscribe = async (
+  mailAccepter: MailAccepter,
+  sentTime: string
+): Promise<Restful> => {
   try {
     // 检查设置
     const setting = await SettingAction.Retrieve__ByName(settingName);
     if (!setting) {
-      return new Restful(2, '发送订阅确认邮件失败，设置项不存在');
+      return new Restful(3, '确认订阅失败，设置项不存在');
     }
     const setting_json = <MailSettingJSON>JSON.parse(setting.setting_json);
     if (!setting_json.accepter_new_subscriber) {
-      return new Restful(3, '发送订阅确认邮件失败，现在不接受邮件订阅');
+      return new Restful(4, '确认订阅失败，现在不接受邮件订阅');
+    }
+
+    // 解密时间并验证合法性
+    const expiredTime = moment(Number(decipherCrypto(sentTime, password))).add(
+      setting_json.subscribe_confirm_email_expire_time,
+      'days'
+    );
+    if (moment().isBefore(expiredTime)) {
+      return new Restful(5, '该确认邮件已过期');
     }
 
     // 解密name和address
@@ -202,10 +180,54 @@ const Subscribe = async (mailAccepter: MailAccepter): Promise<Restful> => {
       }
       mailAccepter.isActived = true;
       mailAccepter = await Action.Update(existedMailAccepter, mailAccepter);
+      return new Restful(0, '订阅成功', mailAccepter.toJSON());
+    } else {
+      return new Restful(2, '该订阅邮件对应的请求不存在');
     }
-    return new Restful(0, '订阅成功', mailAccepter.toJSON());
   } catch (e) {
     return new Restful(99, `订阅失败, ${e.message}`);
+  }
+};
+
+/**
+ * 发送确认取消订阅邮件
+ * @param { MailAccepter } mailAccepter
+ */
+const SendUnsubscribeConfirmEmail = async (
+  mailAccepter: MailAccepter
+): Promise<Restful> => {
+  try {
+    // 检查设置
+    const setting = await SettingAction.Retrieve__ByName(settingName);
+    if (!setting) {
+      return new Restful(4, '发送取消订阅邮件失败，设置项不存在');
+    }
+    const setting_json = <MailSettingJSON>JSON.parse(setting.setting_json);
+
+    const { name, address } = mailAccepter;
+    const encryptedName = cipherCrypto(name, password);
+    const encryptedAddress = cipherCrypto(address, password);
+
+    if (!setting_json.unsubscribe_need_confirm) {
+      // 不需要发送确认邮件, 直接取消订阅
+      return Unsubscribe(MailAccepter.build({ name, address }));
+    }
+
+    const SubscribeConfirmAttributes = {
+      title: `确认取消订阅${blogConfig.blogName}`,
+      accepter: mailAccepter,
+      subscribeUrl: `${blogConfig.publicPath}/mail/unsubscribe?name=${encryptedName}&address=${encryptedAddress}`
+    };
+
+    // 临时模板
+    await send(
+      `是否取消订阅${blogConfig.blogName}的最新消息`,
+      await SubscribeConfirmTemplate(SubscribeConfirmAttributes),
+      mailAccepter
+    );
+    return new Restful(0, '发送取消订阅邮件成功');
+  } catch (e) {
+    return new Restful(99, `发送取消订阅邮件失败, ${e.message}`);
   }
 };
 
@@ -297,16 +319,100 @@ const Delete = async (id: number, userPower: number) => {
   }
 };
 
+/**
+ * 广播邮件
+ * @param { string } subject  邮件标题
+ * @param { string } html 邮件模板
+ * @param { Array<MailAccepter> | null } mailAccepters  邮件接收者
+ */
+const Broadcast = async (
+  subject: string,
+  html: string,
+  mailAccepters: Array<MailAccepter> | null = null
+): Promise<Restful> => {
+  try {
+    // 默认值为mail_accepter表内所有已激活的订阅者
+    mailAccepters = mailAccepters || (await Action.Retrieve__All__IsActived());
+    await broadcast(subject, html, mailAccepters);
+    return new Restful(0, '广播邮件成功');
+  } catch (e) {
+    return new Restful(99, `广播邮件失败, ${e.message}`);
+  }
+};
+
+/**
+ * 当发布帖子时广播邮件
+ * @param { Post } post
+ */
+const Broadcast__WhenNewPost = async (post: Post): Promise<Restful> => {
+  // 检查设置
+  const setting = await SettingAction.Retrieve__ByName(settingName);
+  if (!setting) {
+    return new Restful(2, '发送订阅确认邮件失败，设置项不存在');
+  }
+  const setting_json = <MailSettingJSON>JSON.parse(setting.setting_json);
+  if (!setting_json.broadcast_when_newPost) {
+    return new Restful(1, '发送订阅确认邮件失败，设置为禁止广播邮件');
+  }
+
+  // 临时模板
+  const subject = `你关注的博主 ${blogConfig.blogger} 更新啦 -- 来自${blogConfig.blogName}`;
+  const html = ``;
+
+  return Broadcast(subject, html);
+};
+
+/**
+ * 回复评论时广播邮件
+ * @param { Post } post
+ * @param { PostComment} postComment
+ */
+const Broadcast__WhenReply = async (
+  post: Post,
+  postComment: PostComment
+): Promise<Restful> => {
+  const promises: Array<Promise<any>> = [
+    PostCommentAction.Retrieve__ByID(<number>postComment.parent_id),
+    PostCommentAction.Retrieve__ChildrenComments__ByID(
+      <number>postComment.parent_id
+    )
+  ];
+  const promiseValues = await Promise.all(promises);
+  const mailAccepters: Array<MailAccepter> = [
+    promiseValues[0],
+    ...promiseValues[1]
+  ]
+    .filter(
+      (existedPostComment) =>
+        existedPostComment.id !== postComment.id &&
+        existedPostComment.receive_reply_mail
+    )
+    .map((postComment) => {
+      return MailAccepter.build({
+        name: postComment.username,
+        address: postComment.email
+      });
+    });
+
+  // 临时模板
+  console.log(mailAccepters);
+  const subject = ``;
+  const html = ``;
+  return Broadcast(subject, html, mailAccepters);
+};
+
 export default {
   InitSetting,
   UpdateSetting,
   DeleteSetting,
   SendSubscribeConfirmEmail,
-  Broadcast,
-  Broadcast__WhenNewPost,
   Subscribe,
+  SendUnsubscribeConfirmEmail,
   Unsubscribe,
   Retrieve__All,
   Edit,
-  Delete
+  Delete,
+  Broadcast,
+  Broadcast__WhenNewPost,
+  Broadcast__WhenReply
 };
