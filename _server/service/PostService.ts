@@ -53,7 +53,6 @@ const Create = async (
       post.toJSON()
     );
   } catch (e) {
-    console.log(e.message);
     await t.rollback();
     return new Restful(
       99,

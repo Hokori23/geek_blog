@@ -1,7 +1,9 @@
-import { serverConfig } from '@config';
-const cryptoConfig = serverConfig.crypto;
 import moment from 'moment';
 import CRYPTO from 'crypto';
+import chalk from 'chalk';
+
+import { serverConfig } from '@config';
+const cryptoConfig = serverConfig.crypto;
 
 /**
  * 常量
@@ -30,7 +32,9 @@ const isUndef = (v: any): boolean => {
  * @param { Error } e
  */
 const emailErrorLocation = (e: Error): void => {
-  console.log(e.stack);
+  if (e.stack) {
+    console.log(chalk.redBright(e.stack));
+  }
 };
 
 /**

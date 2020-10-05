@@ -1,6 +1,14 @@
+import chalk from 'chalk';
+
 import { UserAction } from '@action';
 import { serverConfig, blogConfig } from '@config';
-import { isUndef, QUERY_METHODS, BODY_METHODS, Restful, md5Crypto } from '@public';
+import {
+  isUndef,
+  QUERY_METHODS,
+  BODY_METHODS,
+  Restful,
+  md5Crypto
+} from '@public';
 
 const { jwtConfig, baseURL } = serverConfig;
 const JWT = require('jwt-simple');
@@ -38,10 +46,11 @@ const publicList = [
   `${baseURL}/post/retrieve-id`,
   `${baseURL}/post/retrieve`,
   `${baseURL}/post/retrieve-fuzzy`,
-  `${baseURL}/post-tag/retrieve`,
+  `${baseURL}/post-tag/retrieve-slug`,
   `${baseURL}/mail/subscribe-confirm`,
   `${baseURL}/mail/subscribe`,
-  `${baseURL}/mail/unsubscribe`,
+  `${baseURL}/mail/unsubscribe-confirm`,
+  `${baseURL}/mail/unsubscribe`
 ];
 
 /**
@@ -153,7 +162,7 @@ const JWTFilter = async (req, res, next) => {
    * 白名单以内的请求生成JWT并弹出
    */
   if (flag) {
-    console.log(`JWT 白名单以内的请求`);
+    console.log(chalk.gray(`JWT 白名单以内的请求`));
     let account;
     const method = req.method;
     if (QUERY_METHODS.indexOf(method) !== -1) {
@@ -161,7 +170,7 @@ const JWTFilter = async (req, res, next) => {
     } else if (BODY_METHODS.indexOf(method) !== -1) {
       account = req.body.account;
     } else {
-      console.log(`不确定的请求方式，${method}`);
+      console.log(chalk.red(`不确定的请求方式，${method}`));
       // 进行邮件提醒
       res.status(500).end();
       res.locals.isResponsed = true;
@@ -182,7 +191,7 @@ const JWTFilter = async (req, res, next) => {
       }
       res.set('Authorization', newJWT);
     } catch (e) {
-      console.log(e);
+      console.log(chalk.red(e));
       // 进行邮件提醒
       res.status(500).end();
       res.locals.isResponsed = true;
@@ -197,19 +206,21 @@ const JWTFilter = async (req, res, next) => {
     for (let i = 0; i < publicList.length; i++) {
       const reg = new RegExp(`^${publicList[i]}`);
       if (reg.test(URL)) {
-        console.log(`公开接口请求`);
+        console.log(chalk.gray('公开接口请求'));
         return next(); // 继续
       }
     }
+    console.log(chalk.redBright('非法请求'));
     res.status(401).end(); // 弹出
     res.locals.isResponsed = true;
     return next();
   }
 
   /**
-   * 白名单以外的请求检查并更新JWT
+   * 白名单以外的请求检查并更新JWT(已登录状态)
+   * 即非法请求或需要权限的请求
    */
-  console.log(`JWT 白名单以外的请求`);
+  console.log(chalk.gray(`JWT 白名单以外的请求`));
   try {
     const decodedJWT = Decode(encodedJWT);
     // 检查JWT合法性
