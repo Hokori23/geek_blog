@@ -15,7 +15,7 @@ const config = {
     bloggerName: 'Blogger',
 
     // 部署时的公共路径
-    publicPath: 'https://example.com',
+    publicPath: 'https://example.com/',
 
     // 插件
     plugins: []
@@ -88,7 +88,7 @@ const config = {
 
       // 连接池
       pool: {
-        max: 5,
+        max: 20,
         min: 1,
         idle: 30000,
         acquire: 60000
