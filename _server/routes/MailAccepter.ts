@@ -5,12 +5,6 @@ import { MailAccepter } from '@vo';
 import { Restful, checkIntegrity } from '@public';
 const ROUTER = EXPRESS.Router();
 
-// 移至app.ts
-// /**
-//  * 初始化邮箱设置
-//  */
-// Service.InitSetting();
-
 /**
  * 由前端发送订阅确认邮件
  * @path /subscribe-confirm

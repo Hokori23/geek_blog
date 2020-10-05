@@ -5,6 +5,7 @@ import {
   PostTag as PostTagRouter,
   MailAccepter as MailAccepterRouter
 } from '@routes';
+import { MailAccepterService } from '@service';
 
 import {
   JWTFilter,
@@ -33,6 +34,16 @@ APP.use(LoggerMiddle); // 如果JWTFilter已给出响应，整个中间件链在
 
 // APP.use(LOGGER("dev"));
 // app.use(express.static(PATH.join(__dirname, 'public')));
+
+/**
+ * Initial
+ */
+(async () => {
+  console.log('Start to init');
+  const promises = [MailAccepterService.InitSetting()];
+  await Promise.all(promises);
+  console.log('Inited successfully');
+})();
 
 APP.use('/', HomeRouter);
 APP.use('/user', UserRouter);
