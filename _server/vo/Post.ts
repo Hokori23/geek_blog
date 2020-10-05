@@ -90,16 +90,40 @@ Post.init(
     },
     user_account: {
       type: DataTypes.STRING(20),
-      allowNull: false,
+      validate: {
+        notNull: {
+          msg: '账号不能为空'
+        },
+        notEmpty: {
+          msg: '账号不能为空'
+        },
+        len: {
+          args: [5, 20],
+          msg: '账号长度应为5至20字符'
+        }
+      },
       comment: '用户账号'
     },
     title: {
       type: DataTypes.STRING(50),
+      validate: {
+        len: {
+          args: [0, 50],
+          msg: '标题长度最长为50字符'
+        }
+      },
       comment: '帖子标题'
     },
     content: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      validate: {
+        notNull: {
+          msg: '帖子内容不能为空'
+        },
+        notEmpty: {
+          msg: '帖子内容不能为空'
+        }
+      },
       comment: '帖子内容'
     },
     view_count: {
@@ -130,6 +154,11 @@ Post.init(
     type: {
       type: DataTypes.TINYINT,
       defaultValue: 0,
+      validate: {
+        min: 0,
+        max: 2,
+        isInt: true
+      },
       comment: '文章类别参考: { 0: 文章, 1: LandScape文章, 2: 说说 }'
     },
     cover_url: {

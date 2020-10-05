@@ -46,14 +46,35 @@ MailAccepter.init(
     },
     name: {
       type: DataTypes.STRING(20),
-      allowNull: false,
       unique: 'name',
+      validate: {
+        notNull: {
+          msg: '名字不能为空'
+        },
+        notEmpty: {
+          msg: '名字不能为空'
+        },
+        len: {
+          args: [2, 20],
+          msg: '名字长度应为2至20字符'
+        }
+      },
       comment: '订阅者邮箱名'
     },
     address: {
       type: DataTypes.STRING(150),
-      allowNull: false,
       unique: 'address',
+      validate: {
+        isEmail: {
+          msg: '请输入邮箱格式'
+        },
+        notNull: {
+          msg: '邮箱不能为空'
+        },
+        notEmpty: {
+          msg: '邮箱不能为空'
+        }
+      },
       comment: '订阅者邮箱'
     },
     isActived: {

@@ -59,23 +59,69 @@ User.init(
     },
     account: {
       type: DataTypes.STRING(20),
-      allowNull: false,
+      validate: {
+        notNull: {
+          msg: '账号不能为空'
+        },
+        notEmpty: {
+          msg: '账号不能为空'
+        },
+        len: {
+          args: [5, 20],
+          msg: '账号长度应为5至20字符'
+        },
+        isAlphanumeric: {
+          msg: '只允许字母和数字'
+        }
+      },
       comment: '用户账号'
     },
     username: {
       type: DataTypes.STRING(20),
       unique: 'username',
-      allowNull: false,
+      validate: {
+        notNull: {
+          msg: '用户名不能为空'
+        },
+        notEmpty: {
+          msg: '用户名不能为空'
+        },
+        len: {
+          args: [2, 20],
+          msg: '用户名长度应为2至20字符'
+        }
+      },
       comment: '用户名'
     },
     email: {
       type: DataTypes.STRING(150),
-      allowNull: false,
+      validate: {
+        isEmail: {
+          msg: '请输入邮箱格式'
+        },
+        notNull: {
+          msg: '邮箱不能为空'
+        },
+        notEmpty: {
+          msg: '邮箱不能为空'
+        }
+      },
       comment: 'email'
     },
     password: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
+      type: DataTypes.STRING(20),
+      validate: {
+        notNull: {
+          msg: '密码不能为空'
+        },
+        notEmpty: {
+          msg: '密码不能为空'
+        },
+        len: {
+          args: [8, 20],
+          msg: '密码长度应为8至20字符'
+        }
+      },
       comment: '密码'
     },
     avatar_url: {

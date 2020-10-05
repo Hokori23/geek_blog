@@ -60,29 +60,72 @@ PostComment.init(
     },
     parent_id: {
       type: DataTypes.INTEGER.UNSIGNED,
+      validate: {
+        isInt: true
+      },
       comment: '父评论id'
     },
     content: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      validate: {
+        notNull: {
+          msg: '评论不能为空'
+        },
+        notEmpty: {
+          msg: '评论不能为空'
+        },
+        max: {
+          args: [255],
+          msg: '评论最大长度为255字符'
+        }
+      },
       comment: '评论内容'
     },
     username: {
       type: DataTypes.STRING(20),
-      allowNull: false,
+      validate: {
+        notNull: {
+          msg: '用户名不能为空'
+        },
+        notEmpty: {
+          msg: '用户名不能为空'
+        },
+        max: {
+          args: [20],
+          msg: '用户名最大长度为20字符'
+        }
+      },
       comment: '评论者用户名'
     },
     email: {
       type: DataTypes.STRING(150),
-      allowNull: false,
+      validate: {
+        notNull: {
+          msg: '邮箱不能为空'
+        },
+        notEmpty: {
+          msg: '邮箱不能为空'
+        },
+        isEmail: {
+          msg: '请输入邮箱格式'
+        }
+      },
       comment: '评论者邮箱'
     },
     site_url: {
       type: DataTypes.STRING(255),
+      validate: {
+        isUrl: {
+          msg: '请输入合法网站链接'
+        }
+      },
       comment: '评论者网站'
     },
     ip: {
       type: DataTypes.STRING(50),
+      validate: {
+        isIP: true
+      },
       comment: '评论者IP'
     },
     ip_location: {
