@@ -15,25 +15,6 @@ class MailAccepter extends Model implements MailAccepterAttributes {
   public name!: string;
   public address!: string;
   public isActived!: boolean | null;
-
-  // 属性转数组
-  static toArray(): Array<any> {
-    const res = [] as Array<any>;
-    Object.keys(this).forEach((key) => {
-      res.push(this[key]);
-    });
-    return res;
-  }
-  // 检查参数完整性
-  static checkIntegrity(params?: Array<string>): boolean {
-    return params
-      ? params.every((v) => {
-          return isDef(v);
-        })
-      : this.toArray().every((v) => {
-          return isDef(v);
-        });
-  }
 }
 
 MailAccepter.init(
@@ -47,6 +28,7 @@ MailAccepter.init(
     name: {
       type: DataTypes.STRING(20),
       unique: 'name',
+      allowNull: false,
       validate: {
         notNull: {
           msg: '名字不能为空'
@@ -64,6 +46,7 @@ MailAccepter.init(
     address: {
       type: DataTypes.STRING(150),
       unique: 'address',
+      allowNull: false,
       validate: {
         isEmail: {
           msg: '请输入邮箱格式'

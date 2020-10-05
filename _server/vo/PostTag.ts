@@ -29,25 +29,6 @@ class PostTag extends Model implements PostTagAttributes {
   public Posts!: Array<Post> | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-  // 属性转数组
-  static toArray(): Array<any> {
-    const res = [] as Array<any>;
-    Object.keys(this).forEach((key) => {
-      res.push(this[key]);
-    });
-    return res;
-  }
-  // 检查参数完整性
-  static checkIntegrity(params?: Array<string>): boolean {
-    return params
-      ? params.every((v) => {
-          return isDef(v);
-        })
-      : this.toArray().every((v) => {
-          return isDef(v);
-        });
-  }
 }
 
 PostTag.init(
@@ -74,6 +55,7 @@ PostTag.init(
     },
     slug: {
       type: DataTypes.STRING(20),
+      unique: 'slug',
       allowNull: false,
       comment: '静态链接slug'
     },

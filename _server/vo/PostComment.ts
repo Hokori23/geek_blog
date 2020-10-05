@@ -11,6 +11,7 @@ interface PostCommentAttributes {
   username: string;
   email: string;
   site_url: string | null;
+  receive_reply_mail: boolean;
   ip: string | null;
   ip_location: string | null;
   user_agent: string | null;
@@ -27,6 +28,7 @@ class PostComment extends Model implements PostCommentAttributes {
   public ip!: string | null;
   public ip_location!: string | null;
   public user_agent!: string | null;
+  public receive_reply_mail!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -67,6 +69,7 @@ PostComment.init(
     },
     content: {
       type: DataTypes.STRING(255),
+      allowNull: false,
       validate: {
         notNull: {
           msg: '评论不能为空'
@@ -83,6 +86,7 @@ PostComment.init(
     },
     username: {
       type: DataTypes.STRING(20),
+      allowNull: false,
       validate: {
         notNull: {
           msg: '用户名不能为空'
@@ -99,6 +103,7 @@ PostComment.init(
     },
     email: {
       type: DataTypes.STRING(150),
+      allowNull: false,
       validate: {
         notNull: {
           msg: '邮箱不能为空'
@@ -135,6 +140,11 @@ PostComment.init(
     user_agent: {
       type: DataTypes.STRING(255),
       comment: '评论者User-Agent'
+    },
+    receive_reply_mail: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      comment: '是否有回复时接受邮件'
     }
   },
   {

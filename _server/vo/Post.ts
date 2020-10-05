@@ -19,6 +19,7 @@ interface PostAttributes {
   content: string;
   view_count: number;
   comment_count: number;
+  is_draft: boolean;
   is_hidden: boolean;
   is_locked: boolean;
   is_sticky: boolean;
@@ -38,6 +39,7 @@ class Post extends Model implements PostAttributes {
   public content!: string;
   public view_count!: number;
   public comment_count!: number;
+  public is_draft!: boolean;
   public is_hidden!: boolean;
   public is_locked!: boolean;
   public is_sticky!: boolean;
@@ -59,25 +61,6 @@ class Post extends Model implements PostAttributes {
   public countPostComments!: HasManyCountAssociationsMixin;
   public createPostComment!: HasManyCreateAssociationMixin<PostComment>;
   public PostComments!: Array<PostComment>;
-
-  // 属性转数组
-  static toArray(): Array<any> {
-    const res = [] as Array<any>;
-    Object.keys(this).forEach((key) => {
-      res.push(this[key]);
-    });
-    return res;
-  }
-  // 检查参数完整性
-  static checkIntegrity(params?: Array<string>): boolean {
-    return params
-      ? params.every((v) => {
-          return isDef(v);
-        })
-      : this.toArray().every((v) => {
-          return isDef(v);
-        });
-  }
 }
 
 Post.init(
@@ -90,6 +73,7 @@ Post.init(
     },
     user_account: {
       type: DataTypes.STRING(20),
+      allowNull: false,
       validate: {
         notNull: {
           msg: '账号不能为空'
@@ -116,6 +100,7 @@ Post.init(
     },
     content: {
       type: DataTypes.TEXT,
+      allowNull: false,
       validate: {
         notNull: {
           msg: '帖子内容不能为空'
@@ -135,6 +120,11 @@ Post.init(
       type: DataTypes.INTEGER.UNSIGNED,
       defaultValue: 0,
       comment: '评论数'
+    },
+    is_draft: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      comment: '草稿'
     },
     is_hidden: {
       type: DataTypes.BOOLEAN,

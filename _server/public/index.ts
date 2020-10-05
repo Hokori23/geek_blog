@@ -69,6 +69,33 @@ const mixin = (attrs: Array<Object>): any => {
 };
 
 /**
+ * 属性转数组
+ * @param { Object } obj
+ */
+const toArray = (obj: Object): Array<any> => {
+  const res = [] as Array<any>;
+  Object.keys(obj).forEach((key) => {
+    res.push(obj[key]);
+  });
+  return res;
+};
+
+/**
+ * 检查参数完整性
+ * @param { Object } obj
+ * @param { Array<string> } params
+ */
+const checkIntegrity = (obj: Object, params?: Array<string>): boolean => {
+  return params
+    ? params.every((v) => {
+        return isDef(v);
+      })
+    : toArray(obj).every((v) => {
+        return isDef(v);
+      });
+};
+
+/**
  * @param { Function } callback 回调函数
  * @param { number } delay 延迟ms
  * @description 输出一个经过防抖处理的函数
@@ -187,6 +214,8 @@ export {
   emailErrorLocation,
   timeFormat,
   mixin,
+  toArray,
+  checkIntegrity,
   debounce,
   md5Crypto,
   cipherCrypto,
@@ -201,6 +230,8 @@ export default {
   emailErrorLocation,
   timeFormat,
   mixin,
+  toArray,
+  checkIntegrity,
   debounce,
   md5Crypto,
   cipherCrypto,

@@ -28,25 +28,6 @@ class User extends Model implements UserAttributes {
   public social_buttons!: string | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-  // 属性转数组
-  static toArray(): Array<any> {
-    const res = [] as Array<any>;
-    Object.keys(this).forEach((key) => {
-      res.push(this[key]);
-    });
-    return res;
-  }
-  // 检查参数完整性
-  static checkIntegrity(params?: Array<string>): boolean {
-    return params
-      ? params.every((v) => {
-          return isDef(v);
-        })
-      : this.toArray().every((v) => {
-          return isDef(v);
-        });
-  }
 }
 
 User.init(
@@ -59,6 +40,7 @@ User.init(
     },
     account: {
       type: DataTypes.STRING(20),
+      allowNull: false,
       validate: {
         notNull: {
           msg: '账号不能为空'
@@ -79,6 +61,7 @@ User.init(
     username: {
       type: DataTypes.STRING(20),
       unique: 'username',
+      allowNull: false,
       validate: {
         notNull: {
           msg: '用户名不能为空'
@@ -95,6 +78,7 @@ User.init(
     },
     email: {
       type: DataTypes.STRING(150),
+      allowNull: false,
       validate: {
         isEmail: {
           msg: '请输入邮箱格式'
@@ -110,6 +94,7 @@ User.init(
     },
     password: {
       type: DataTypes.STRING(20),
+      allowNull: false,
       validate: {
         notNull: {
           msg: '密码不能为空'
