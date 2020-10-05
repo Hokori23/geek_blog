@@ -88,7 +88,7 @@ const toArray = (obj: Object): Array<any> => {
 const checkIntegrity = (obj: Object, params?: Array<string>): boolean => {
   return params
     ? params.every((v) => {
-        return isDef(v);
+        return isDef(obj[v]);
       })
     : toArray(obj).every((v) => {
         return isDef(v);
