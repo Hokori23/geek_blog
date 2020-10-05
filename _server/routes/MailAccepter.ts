@@ -2,13 +2,14 @@ import EXPRESS from 'express';
 
 import { MailAccepterService as Service } from '@service';
 import { MailAccepter } from '@vo';
-import { Restful } from '@public';
+import { Restful, checkIntegrity } from '@public';
 const ROUTER = EXPRESS.Router();
 
-/**
- * 初始化邮箱设置
- */
-Service.InitSetting();
+// 移至app.ts
+// /**
+//  * 初始化邮箱设置
+//  */
+// Service.InitSetting();
 
 /**
  * 由前端发送订阅确认邮件
@@ -18,7 +19,7 @@ ROUTER.post('subscribe-confirm', async (req, res, next) => {
   const mailAccepter = MailAccepter.build(req.body);
 
   try {
-    if (!MailAccepter.checkIntegrity(['name', 'address'])) {
+    if (!checkIntegrity(mailAccepter, ['name', 'address'])) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
       res
@@ -41,10 +42,34 @@ ROUTER.get('/subscribe', async (req, res, next) => {
   const mailAccepter: any = MailAccepter.build(req.query).toJSON();
 
   try {
-    if (!MailAccepter.checkIntegrity(['name', 'address'])) {
+    if (!checkIntegrity(mailAccepter, ['name', 'address'])) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
-      res.status(200).json(await Service.Subscribe(mailAccepter));
+      res
+        .status(200)
+        .json(await Service.Subscribe(mailAccepter, req.query.time));
+    }
+  } catch (e) {
+    // 进行邮件提醒
+    res.status(500).end();
+  }
+  next();
+});
+
+/**
+ * 由前端发送取消订阅邮件
+ * @path /subscribe-confirm
+ */
+ROUTER.post('unsubscribe-confirm', async (req, res, next) => {
+  const mailAccepter = MailAccepter.build(req.body);
+
+  try {
+    if (!checkIntegrity(mailAccepter, ['name', 'address'])) {
+      res.status(200).json(new Restful(1, '参数错误'));
+    } else {
+      res
+        .status(200)
+        .json(await Service.SendUnsubscribeConfirmEmail(mailAccepter));
     }
   } catch (e) {
     // 进行邮件提醒
@@ -62,7 +87,7 @@ ROUTER.get('/unsubscribe', async (req, res, next) => {
   const mailAccepter: any = MailAccepter.build(req.query).toJSON();
 
   try {
-    if (!MailAccepter.checkIntegrity(['name', 'address'])) {
+    if (!checkIntegrity(mailAccepter, ['name', 'address'])) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
       res.status(200).json(await Service.Unsubscribe(mailAccepter));

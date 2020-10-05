@@ -2,7 +2,7 @@ import EXPRESS from 'express';
 
 import { UserService as Service } from '@service';
 import { User } from '@vo';
-import { Restful } from '@public';
+import { Restful, checkIntegrity } from '@public';
 
 const ROUTER = EXPRESS.Router();
 
@@ -14,7 +14,7 @@ const ROUTER = EXPRESS.Router();
 ROUTER.post('/register', async (req, res, next) => {
   const user = User.build(req.body);
   if (
-    !User.checkIntegrity(['account', 'username', 'email', 'password', 'power'])
+    !checkIntegrity(user, ['account', 'username', 'email', 'password', 'power'])
   ) {
     res.status(200).json(new Restful(1, '参数错误'));
     return next();
@@ -36,7 +36,7 @@ ROUTER.post('/register', async (req, res, next) => {
  */
 ROUTER.post('/login', async (req, res, next) => {
   const user = User.build(req.body);
-  if (!User.checkIntegrity(['account', 'password'])) {
+  if (!checkIntegrity(user, ['account', 'password'])) {
     res.status(200).json(new Restful(1, '参数错误'));
     return next();
   }
@@ -79,7 +79,7 @@ ROUTER.get('/retrieve', async (req, res, next) => {
 ROUTER.post('/edit', async (req, res, next) => {
   const user: any = User.build(req.body).toJSON();
   const old_password = req.body.old_password;
-  if (!User.checkIntegrity(['account'])) {
+  if (!checkIntegrity(user, ['account'])) {
     res.status(200).json(new Restful(1, '参数错误'));
     return next();
   }

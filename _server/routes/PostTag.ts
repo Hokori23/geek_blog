@@ -2,7 +2,7 @@ import EXPRESS from 'express';
 
 import { PostTagService as Service } from '@service';
 import { PostTag } from '@vo';
-import { Restful, isUndef } from '@public';
+import { Restful, isUndef, checkIntegrity } from '@public';
 
 const ROUTER = EXPRESS.Router();
 
@@ -14,7 +14,7 @@ ROUTER.post('/create', async (req, res, next) => {
   const postTag: PostTag = PostTag.build(req.body);
 
   try {
-    if (!PostTag.checkIntegrity(['name', 'slug'])) {
+    if (!checkIntegrity(postTag, ['name', 'slug'])) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
       res.status(200).json(await Service.Create(postTag, res.locals.userPower));
@@ -29,12 +29,13 @@ ROUTER.post('/create', async (req, res, next) => {
 /**
  * 通过标签名查找帖子（分页）
  * @path /retrieve
+ * @description 返回的是帖子数组
  */
-ROUTER.get('/retrieve', async (req, res, next) => {
-  const { name, page, capacity } = req.query;
+ROUTER.get('/retrieve-slug', async (req, res, next) => {
+  const { slug, page, capacity } = req.query;
   try {
     if (
-      !name &&
+      isUndef(slug) &&
       isUndef(page) &&
       isUndef(capacity) &&
       page < 0 &&
@@ -44,7 +45,7 @@ ROUTER.get('/retrieve', async (req, res, next) => {
     } else {
       res
         .status(200)
-        .json(await Service.Retrieve__ByTagName(name, page, capacity));
+        .json(await Service.Retrieve__BySlug(slug, page, capacity));
     }
   } catch (e) {
     // 进行邮件提醒
@@ -61,7 +62,7 @@ ROUTER.post('/edit', async (req, res, next) => {
   const postTag: any = PostTag.build(req.body).toJSON();
 
   try {
-    if (!PostTag.checkIntegrity(['id', 'name', 'slug'])) {
+    if (!checkIntegrity(postTag, ['id', 'name', 'slug'])) {
       res.status(200).json(new Restful(1, '参数错误'));
     } else {
       res.status(200).json(await Service.Edit(postTag, res.locals.userPower));
