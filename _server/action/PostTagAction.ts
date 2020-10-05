@@ -35,21 +35,21 @@ const Retrieve__ByTagName = (name: string): Promise<PostTag | null> => {
 };
 
 /**
- * 通过标签名查询帖子（分页）
- * @param { string } tag_name
+ * 通过slug查询帖子（分页）
+ * @param { string } slug
  * @param { number } offset
  * @param { number } limit
  * @param { boolean } isASC
  */
-const Retrieve__ByTagNameInPage = (
-  name: string,
+const Retrieve__BySlugInPage = (
+  slug: string,
   offset: number,
   limit: number,
   isASC: boolean = false
 ): Promise<PostTag | null> => {
   return PostTag.findOne({
     where: {
-      name: name
+      slug
     },
     include: Post,
     offset,
@@ -90,7 +90,7 @@ export default {
   Create,
   Retrieve__ByID,
   Retrieve__ByTagName,
-  Retrieve__ByTagNameInPage,
+  Retrieve__BySlugInPage,
   Retrieve__All,
   Update,
   Delete

@@ -23,19 +23,19 @@ const Create = async (
 };
 
 /**
- * 通过标签名查找帖子（分页）
- * @param { string } tag_name
+ * 通过slug查找帖子（分页）
+ * @param { string } slug
  * @param { number } page
  * @param { number } capacity
  */
-const Retrieve__ByTagName = async (
-  tag_name: string,
+const Retrieve__BySlug = async (
+  slug: string,
   page: number,
   capacity: number
 ): Promise<Restful> => {
   try {
-    const existedPostTag = await PostTagAction.Retrieve__ByTagNameInPage(
-      tag_name,
+    const existedPostTag = await PostTagAction.Retrieve__BySlugInPage(
+      slug,
       (page - 1) * capacity,
       Number(capacity)
     );
@@ -108,7 +108,7 @@ const Delete = async (id: number, userPower: number) => {
 
 export default {
   Create,
-  Retrieve__ByTagName,
+  Retrieve__BySlug,
   Edit,
   Delete
 };
