@@ -5,12 +5,9 @@ import { Post, PostTag, PostComment } from '@vo';
 /**
  * 添加帖子
  * @param { Post } post
- * @param { Transaction | undefined } t
+ * @param { Transaction } ?t
  */
-const Create = (
-  post: Post,
-  t: Transaction | undefined = undefined
-): Promise<Post> => {
+const Create = (post: Post, t?: Transaction): Promise<Post> => {
   return post.save({ transaction: t });
 };
 
@@ -18,16 +15,19 @@ const Create = (
  * 通过ID查询单个帖子
  * @param { number } id
  * @param { boolean } withComments
+ * @param { Transaction } ?t
  */
 const Retrieve__ByID = (
   id: number,
-  withComments: boolean = true
+  withComments: boolean = true,
+  t?: Transaction
 ): Promise<Post | null> => {
   return Post.findOne({
     where: {
       id
     },
-    include: withComments ? [PostTag, PostComment] : PostTag
+    include: withComments ? [PostTag, PostComment] : PostTag,
+    transaction: t
   });
 };
 
@@ -95,13 +95,49 @@ const Update = (oldPost: Post, newPost: Post): Promise<Post> => {
 /**
  * 删除帖子
  * @param { number } id
+ * @param { Transaction } ?t
  */
-const Delete = (id: number): Promise<number> => {
+const Delete = (id: number, t?: Transaction): Promise<number> => {
   return Post.destroy({
     where: {
       id
-    }
+    },
+    transaction: t
   });
+};
+
+/**
+ * 修改访问数
+ * @param { Post } post
+ * @param { boolean } isIncrement
+ * @param { Transaction } ?t
+ */
+const ViewCountChange = async (
+  post: Post,
+  isIncrement: boolean,
+  t?: Transaction
+): Promise<Post> => {
+  isIncrement
+    ? await post.increment('view_count', { transaction: t })
+    : await post.decrement('view_count', { transaction: t });
+  return post.reload();
+};
+
+/**
+ * 修改评论数
+ * @param { Post } post
+ * @param { boolean } isIncrement
+ * @param { Transaction } ?t
+ */
+const CommentCountChange = async (
+  post: Post,
+  isIncrement: boolean,
+  t?: Transaction
+): Promise<Post> => {
+  isIncrement
+    ? await post.increment('comment_count', { transaction: t })
+    : await post.decrement('comment_count', { transaction: t });
+  return post.reload();
 };
 
 export default {
@@ -110,5 +146,7 @@ export default {
   Retrieve__Page,
   Retrieve__Fuzzy,
   Update,
-  Delete
+  Delete,
+  ViewCountChange,
+  CommentCountChange
 };

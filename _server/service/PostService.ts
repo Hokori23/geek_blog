@@ -42,8 +42,8 @@ const Create = async (
       promises.push(post.addPostTag(postTag, { transaction: t }));
     });
     await Promise.all(promises);
-    t.commit();
     post = (await PostAction.Retrieve__ByID(<number>post.id)) as Post;
+    await t.commit();
 
     // 广播邮件
     MailAccepterService.Broadcast__WhenNewPost(post);
@@ -63,13 +63,17 @@ const Retrieve__ByID = async (
   id: number,
   withComments: boolean = true
 ): Promise<Restful> => {
+  const t = await DB.transaction();
   try {
-    const existedPost = await PostAction.Retrieve__ByID(id, withComments);
+    let existedPost = await PostAction.Retrieve__ByID(id, withComments, t);
     if (!existedPost) {
       return new Restful(1, '帖子不存在');
     }
+    existedPost = await PostAction.ViewCountChange(existedPost, true, t);
+    await t.commit();
     return new Restful(0, '查询成功', existedPost.toJSON());
   } catch (e) {
+    await t.rollback();
     return new Restful(99, `查询失败, ${e.message}`);
   }
 };
