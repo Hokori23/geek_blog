@@ -10,7 +10,11 @@ import { MailAccepter, Setting, Post, PostComment } from '@vo';
 import { broadcast, send, template } from '@mailer';
 import { blogConfig, serverConfig } from '@config';
 
-const { SubscribeConfirmTemplate } = template;
+const {
+  SubscribeConfirmTemplate,
+  UnsubcribeConfirmTemplate,
+  NewPostTemplate
+} = template;
 const { password } = serverConfig.crypto;
 
 /**
@@ -113,7 +117,7 @@ const SendSubscribeConfirmEmail = async (
     const encryptedAddress = cipherCrypto(address, password);
     const encryptedTime = cipherCrypto(String(Date.now()), password);
 
-    const SubscribeConfirmAttributes = {
+    const SubscribeConfirmInfo = {
       title: `确认订阅${blogConfig.blogName}`,
       accepter: mailAccepter,
       subscribeUrl: `${blogConfig.publicPath}/mail/subscribe?name=${encryptedName}&address=${encryptedAddress}&time=${encryptedTime}`
@@ -121,14 +125,14 @@ const SendSubscribeConfirmEmail = async (
 
     await send(
       `是否确认订阅${blogConfig.blogName}的最新消息`,
-      await SubscribeConfirmTemplate(SubscribeConfirmAttributes),
+      await SubscribeConfirmTemplate(SubscribeConfirmInfo),
       mailAccepter
     );
     mailAccepter.isActived = false;
     await Action.Create(mailAccepter);
     return new Restful(0, '发送订阅确认邮件成功', {
       ...mailAccepter.toJSON(),
-      subscribeInfo: SubscribeConfirmAttributes
+      subscribeInfo: SubscribeConfirmInfo
     });
   } catch (e) {
     return new Restful(99, `发送订阅确认邮件失败, ${e.message}`);
@@ -213,19 +217,21 @@ const SendUnsubscribeConfirmEmail = async (
       return Unsubscribe(MailAccepter.build({ name, address }));
     }
 
-    const SubscribeConfirmAttributes = {
+    const UnsubscribeConfirmInfo = {
       title: `确认取消订阅${blogConfig.blogName}`,
       accepter: mailAccepter,
-      subscribeUrl: `${blogConfig.publicPath}/mail/unsubscribe?name=${encryptedName}&address=${encryptedAddress}`
+      unsubscribeUrl: `${blogConfig.publicPath}/mail/unsubscribe-confirm?name=${encryptedName}&address=${encryptedAddress}`
     };
 
-    // 临时模板
     await send(
       `是否取消订阅${blogConfig.blogName}的最新消息`,
-      await SubscribeConfirmTemplate(SubscribeConfirmAttributes),
+      await UnsubcribeConfirmTemplate(UnsubscribeConfirmInfo),
       mailAccepter
     );
-    return new Restful(0, '发送取消订阅邮件成功');
+    return new Restful(0, '发送取消订阅邮件成功', {
+      ...mailAccepter.toJSON(),
+      subscribeInfo: UnsubscribeConfirmInfo
+    });
   } catch (e) {
     return new Restful(99, `发送取消订阅邮件失败, ${e.message}`);
   }
@@ -355,15 +361,19 @@ const Broadcast__WhenNewPost = async (post: Post): Promise<Restful> => {
     return new Restful(1, '发送订阅确认邮件失败，设置为禁止广播邮件');
   }
 
-  // 临时模板
   const subject = `你关注的博主 ${blogConfig.blogger} 更新啦 -- 来自${blogConfig.blogName}`;
-  const html = ``;
 
-  return Broadcast(subject, html);
+  const newPostInfo = {
+    title: subject,
+    postTitle: <string>post.title,
+    newPostUrl: `${blogConfig.publicPath}/post/${post.id}`
+  };
+
+  return Broadcast(subject, await NewPostTemplate(newPostInfo));
 };
 
 /**
- * 回复评论时广播邮件
+ * 回复评论时广播给父评论（勾选了`有回复时是否接受邮件`选项）
  * @param { Post } post
  * @param { PostComment} postComment
  */
@@ -371,11 +381,10 @@ const Broadcast__WhenReply = async (
   post: Post,
   postComment: PostComment
 ): Promise<Restful> => {
+  const parentID = <number>postComment.parent_id;
   const promises: Array<Promise<any>> = [
-    PostCommentAction.Retrieve__ByID(<number>postComment.parent_id),
-    PostCommentAction.Retrieve__ChildrenComments__ByID(
-      <number>postComment.parent_id
-    )
+    PostCommentAction.Retrieve__ByID(parentID),
+    PostCommentAction.Retrieve__ChildrenComments__ByID(parentID)
   ];
   const promiseValues = await Promise.all(promises);
   const mailAccepters: Array<MailAccepter> = [
@@ -394,7 +403,7 @@ const Broadcast__WhenReply = async (
       });
     });
 
-  // 临时模板
+  // TODO 临时模板
   console.log(mailAccepters);
   const subject = ``;
   const html = ``;
