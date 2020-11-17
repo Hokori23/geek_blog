@@ -33,6 +33,8 @@ const Create = async (postComment): Promise<Restful> => {
 
     const promiseValues = await Promise.all(promises);
     postComment = promiseValues[0];
+
+    // 当有父评论时，广播给父评论及同级评论
     if (hasParentComment) {
       MailAccepterService.Broadcast__WhenReply(post, postComment);
     }

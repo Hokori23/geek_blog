@@ -63,7 +63,7 @@ const mixin = (attrs: Array<Object>): any => {
     ) {
       throw new TypeError('参数类型错误: [ attrs: Array<Object> ]');
     }
-    Object.keys(attrs[i]).forEach((v: string): void => {
+    Object.keys(attrs[i]).forEach((v: string) => {
       if (isDef(attrs[i][v])) {
         attrs[i - 1][v] = attrs[i][v];
       }

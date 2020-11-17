@@ -8,7 +8,6 @@ import {
   HasManyCreateAssociationMixin
 } from 'sequelize';
 
-import { isDef } from '@public';
 import { PostTag, PostComment } from '@vo';
 import DB from '@database';
 

@@ -6,7 +6,7 @@ import DB from '@database';
 interface PostCommentAttributes {
   id: number | null;
   post_id: number;
-  parent_id: number | null; // 为null时是顶层评论，记得处理结果集
+  parent_id: number | null; // TODO 为null时是顶层评论，记得处理结果集
   content: string;
   username: string;
   email: string;
@@ -144,7 +144,7 @@ PostComment.init(
     receive_reply_mail: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
-      comment: '是否有回复时接受邮件'
+      comment: '有回复时是否接受邮件'
     }
   },
   {
