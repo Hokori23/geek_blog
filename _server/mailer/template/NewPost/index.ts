@@ -7,7 +7,6 @@ import juice from 'juice';
 moment.locale('zh-cn');
 
 import { blogConfig } from '@config';
-import { MailAccepter } from '@vo';
 
 /**
  * @description 使用precss编译scss, sass, 如果非调试状态(isTesting = false)运行中需要应用更改后的scss, sass样式，需要重新调用该函数
@@ -34,30 +33,26 @@ const compilerStyleFile = (isTesting: boolean = false): Promise<any> => {
           result.warnings().forEach((warn) => {
             console.warn(warn.toString());
           });
-          fs.writeFileSync(
-            path.resolve(__dirname, 'template.css'),
-            result.css
-          );
+          fs.writeFileSync(path.resolve(__dirname, 'template.css'), result.css);
           return result.css.replace(/[\r|\t|\n]/g, '');
         })
     );
   });
 };
 
-interface SubscribeConfirmAttributes {
+interface newPostInfoAttribute {
   title: string;
-  accepter: MailAccepter;
-  subscribeUrl: string;
+  postTitle: string;
+  newPostUrl: string;
 }
 
 let cssOutputString; // 单例变量
 
 const OutputTemplate = async (
-  subscribeConfirmInfo: SubscribeConfirmAttributes,
+  newPostInfo: newPostInfoAttribute,
   isTesting: boolean = false
 ): Promise<string> => {
-  const { title, accepter, subscribeUrl } = subscribeConfirmInfo;
-  const { name, address } = accepter;
+  const { title, postTitle, newPostUrl } = newPostInfo;
   cssOutputString = await compilerStyleFile(isTesting);
   // 若出现雪崩问题，可使用events.EventEmitter().once解决
   // 《深入浅出Node》Ch4.3 P77
@@ -65,9 +60,8 @@ const OutputTemplate = async (
   return juice(
     ejs.render(template.toString(), {
       title,
-      subscribeUrl,
-      name,
-      address,
+      postTitle,
+      newPostUrl,
       css: `<style>${cssOutputString}</style>`,
       blogConfig,
       time: moment().format('lll')

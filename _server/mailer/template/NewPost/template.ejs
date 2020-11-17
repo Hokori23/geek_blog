@@ -13,33 +13,29 @@
           <td>
             <div class="mail__container">
               <!-- 订阅者名称 -->
-              <% if (name) { %>
               <div class="mail__container__subscriber">
-                你好呀~ <span class="text-emphasize"><%= name %></span>
+                你好呀~</span>
               </div>
-              <% } %>
               <!-- 订阅者邮箱 -->
-              <% if (address) { %>
+              <% if (newPostUrl) { %>
               <div class="mail__container__address">
                 <div>
-                  以下是您订阅
-                  <a href="<%= blogConfig.publicPath %> ">
+                  你关注的博主
+                  <a href="<%= blogConfig.blogger %> ">
                     <% if (blogConfig.blogName) { %> <%= blogConfig.blogName %>
                     <% } %> <% if (!blogConfig.blogName) { %> <%=
                     blogConfig.publicPath %> <% } %>
                   </a>
-                  的邮箱：
-                </div>
-                <div>
-                  <span class="text-emphasize"><%= address %></span>
+                  更新啦！
                 </div>
               </div>
               <% } %>
               <!-- 订阅链接 -->
-              <% if (subscribeUrl) { %>
-              <div class="mail__container__subscribeUrl">
-                <div style="margin-bottom: 5px">请点击以下链接进行确认订阅</div>
-                <a href="<%= subscribeUrl %>"><%= subscribeUrl %></a>
+              <% if (newPostUrl) { %>
+              <div class="mail__container__newPostUrl">
+                <div style="margin-bottom: 5px">请点击以下链接进行查看</div>
+                <br />
+                <a href="<%= newPostUrl %>">《<%= postTitle %>》</a>
               </div>
               <% } %>
               <div class="footer">

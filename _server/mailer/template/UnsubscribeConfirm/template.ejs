@@ -22,7 +22,7 @@
               <% if (address) { %>
               <div class="mail__container__address">
                 <div>
-                  以下是您订阅
+                  以下是您取消订阅
                   <a href="<%= blogConfig.publicPath %> ">
                     <% if (blogConfig.blogName) { %> <%= blogConfig.blogName %>
                     <% } %> <% if (!blogConfig.blogName) { %> <%=
@@ -36,10 +36,10 @@
               </div>
               <% } %>
               <!-- 订阅链接 -->
-              <% if (subscribeUrl) { %>
-              <div class="mail__container__subscribeUrl">
-                <div style="margin-bottom: 5px">请点击以下链接进行确认订阅</div>
-                <a href="<%= subscribeUrl %>"><%= subscribeUrl %></a>
+              <% if (unsubscribeUrl) { %>
+              <div class="mail__container__unsubscribeUrl">
+                <div style="margin-bottom: 5px">请点击以下链接进行确认取消订阅</div>
+                <a href="<%= unsubscribeUrl %>"><%= unsubscribeUrl %></a>
               </div>
               <% } %>
               <div class="footer">

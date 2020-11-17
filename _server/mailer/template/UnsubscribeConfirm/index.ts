@@ -44,19 +44,19 @@ const compilerStyleFile = (isTesting: boolean = false): Promise<any> => {
   });
 };
 
-interface SubscribeConfirmAttributes {
+interface UnsubscribeConfirmAttributes {
   title: string;
   accepter: MailAccepter;
-  subscribeUrl: string;
+  unsubscribeUrl: string;
 }
 
 let cssOutputString; // 单例变量
 
 const OutputTemplate = async (
-  subscribeConfirmInfo: SubscribeConfirmAttributes,
+  unsubscribeConfirmInfo: UnsubscribeConfirmAttributes,
   isTesting: boolean = false
 ): Promise<string> => {
-  const { title, accepter, subscribeUrl } = subscribeConfirmInfo;
+  const { title, accepter, unsubscribeUrl } = unsubscribeConfirmInfo;
   const { name, address } = accepter;
   cssOutputString = await compilerStyleFile(isTesting);
   // 若出现雪崩问题，可使用events.EventEmitter().once解决
@@ -65,7 +65,7 @@ const OutputTemplate = async (
   return juice(
     ejs.render(template.toString(), {
       title,
-      subscribeUrl,
+      unsubscribeUrl,
       name,
       address,
       css: `<style>${cssOutputString}</style>`,
