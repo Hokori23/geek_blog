@@ -7,26 +7,48 @@ import { Restful, checkIntegrity } from '@public';
 const ROUTER = EXPRESS.Router();
 
 /**
- * 注册
+ * 初始化注册
  * @path /register
  * @param { User } user
  */
 ROUTER.post('/register', async (req, res, next) => {
   const user = User.build(req.body);
   if (
-    !checkIntegrity(user, ['account', 'username', 'email', 'password', 'power'])
+    !checkIntegrity(user, ['account', 'username', 'email', 'password'])
   ) {
     res.status(200).json(new Restful(1, '参数错误'));
     return next();
   }
   try {
-    res.status(200).json(await Service.Register(user));
+    res.status(200).json(await Service.Create__SuperAdmin(user));
   } catch (e) {
     // 进行邮件提醒
     res.status(500).end();
   }
   next();
 });
+
+// /**
+//  * 注册
+//  * @path /register
+//  * @param { User } user
+//  */
+// ROUTER.post('/register', async (req, res, next) => {
+//   const user = User.build(req.body);
+//   if (
+//     !checkIntegrity(user, ['account', 'username', 'email', 'password', 'power'])
+//   ) {
+//     res.status(200).json(new Restful(1, '参数错误'));
+//     return next();
+//   }
+//   try {
+//     res.status(200).json(await Service.Register(user));
+//   } catch (e) {
+//     // 进行邮件提醒
+//     res.status(500).end();
+//   }
+//   next();
+// });
 
 /**
  * 登陆
@@ -105,24 +127,24 @@ ROUTER.post('/edit', async (req, res, next) => {
   next();
 });
 
-/**
- * 注销
- * @path /delete
- * @description 暂时是只有power <= 1的账号才能注销别人的账号，逻辑实现在UserService层
- * @param { string } account
- * @param { string } password
- */
-ROUTER.post('/delete', async (req, res, next) => {
-  const { account, password } = req.body;
-  try {
-    res
-      .status(200)
-      .json(await Service.Delete(res.locals.userAccount, account, password));
-  } catch (e) {
-    // 进行邮件提醒
-    res.status(500).end();
-  }
-  next();
-});
+// /**
+//  * 注销
+//  * @path /delete
+//  * @description 暂时是只有power <= 1的账号才能注销别人的账号，逻辑实现在UserService层
+//  * @param { string } account
+//  * @param { string } password
+//  */
+// ROUTER.post('/delete', async (req, res, next) => {
+//   const { account, password } = req.body;
+//   try {
+//     res
+//       .status(200)
+//       .json(await Service.Delete(res.locals.userAccount, account, password));
+//   } catch (e) {
+//     // 进行邮件提醒
+//     res.status(500).end();
+//   }
+//   next();
+// });
 
 export default ROUTER;
